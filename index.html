@@ -176,6 +176,7 @@ details.more .rows{display:grid;gap:8px;margin-top:10px}
 .pn{font:600 15px/1.2 var(--display);text-transform:uppercase}
 .pn:dir(rtl){text-transform:none}
 .slide .frame::before{z-index:1}
+.slide .over{z-index:2}
 .thumb .frame{position:relative}
 .film-hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:flex-end;overflow:hidden;border-bottom:1px solid var(--line)}
 .film-hero .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
@@ -593,7 +594,7 @@ ${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>`
 }
 const upcoming = () => SCREENINGS.filter(s => new Date(s.date + "T23:59:59") >= new Date()).sort((a, b) => a.date.localeCompare(b.date));
 function pageHome() {
-const all = ordered(), up = upcoming();
+const all = [...released(), ...ordered().filter(f => f.status !== "released")], up = upcoming();
 const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}">
 ${frame("r169", "KEY IMAGE", "", "", key(f), 2000, i === 0)}
 <div class="over"><div class="eyebrow">${f.status === "production" ? t("inProd") : (i === all.findIndex(x => x.status === "released") ? t("newFilm") : t("doc"))} · ${f.year}</div>
