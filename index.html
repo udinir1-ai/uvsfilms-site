@@ -103,7 +103,7 @@ h3:dir(rtl){font:500 16px/1.2 var(--he);letter-spacing:0}
 .quotes{--qc:4;display:flex;flex-wrap:wrap;justify-content:center;gap:20px 28px;margin:0;padding:0;list-style:none}
 .quotes>li{flex:0 0 calc((100% - (var(--qc) - 1) * 28px) / var(--qc));min-width:0}
 .quotes li{border-inline-start:2px solid var(--accent);padding-inline-start:14px}
-.quotes q{font:600 19px/1.35 var(--display)}
+.quotes q{font:600 var(--qf,19px)/1.35 var(--display)}
 .quotes q:dir(rtl){quotes:"״" "״";font-weight:500}
 .quotes span{display:block;margin-top:6px;font:500 12px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 .quotes span:dir(rtl){font:400 13px/1.2 var(--he);letter-spacing:0}
@@ -710,7 +710,8 @@ items.forEach(el => el.style.width = Math.floor(w(cols)) + "px");
 }
 function layoutQuotes(root = document) {
 root.querySelectorAll(".quotes").forEach(ul => { const n = ul.children.length, W = ul.clientWidth; if (!n || !W) return;
-const maxC = Math.max(1, Math.min(4, Math.floor((W + 28) / 268))), rows = Math.ceil(n / maxC); ul.style.setProperty("--qc", Math.ceil(n / rows)); });
+const maxC = Math.max(1, Math.min(6, Math.floor((W + 28) / 178))), rows = Math.ceil(n / maxC), c = Math.ceil(n / rows);
+ul.style.setProperty("--qc", c); ul.style.setProperty("--qf", W < 600 ? "18px" : c >= 6 ? "15px" : c === 5 ? "16.5px" : "19px"); });
 }
 function layoutMarks(root = document) {
 root.querySelectorAll(".marks").forEach(box => {
