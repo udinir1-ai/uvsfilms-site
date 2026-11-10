@@ -185,6 +185,9 @@ details.more .rows{display:grid;gap:8px;margin-top:10px}
 .hero-text{display:grid;gap:16px;max-width:720px;min-width:0}
 .hero-poster{width:200px;max-width:100%;aspect-ratio:2/3;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);flex:none}
 .laurels-band{padding-block:28px}
+.marks.laurels{flex-direction:column;flex-wrap:nowrap}
+.mrow{display:flex;align-items:center;justify-content:center}
+.mk.off{display:none}
 .laurels{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:center}
 .laurels img{height:64px;width:auto;max-width:150px;object-fit:contain;filter:brightness(0) invert(1);opacity:.82}
 .logos{display:flex;flex-wrap:wrap;gap:22px 34px;align-items:center}
@@ -226,15 +229,31 @@ details.more .rows{display:grid;gap:8px;margin-top:10px}
 :dir(rtl) .tplay .lbl{font-family:var(--he);letter-spacing:.04em;font-size:14px}
 .tplay:hover .ring,.tplay:focus-visible .ring{transform:scale(1.07);background:var(--accent);box-shadow:none;color:var(--accent-ink)}
 .tplay:focus-visible{outline:none}
-.fgal{position:relative;aspect-ratio:16/9;max-width:100%;background:#0c0d0f;overflow:hidden}
-.gs{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;overflow:hidden}
-.gs.on{opacity:1}
-.gs img{width:100%;height:100%;object-fit:cover;display:block}
-img[data-t]{position:absolute;max-width:none;object-fit:fill!important}
-.section.media{border-top:0;padding-top:0}
-.gctl{position:absolute;inset-inline-end:14px;bottom:14px;display:flex;align-items:center;gap:8px;z-index:2;background:rgba(17,18,20,.7);padding:4px}
-.gctl button{width:34px;height:30px;border:0;background:transparent;color:var(--fg);cursor:pointer;font:500 15px/1 var(--mono)}
-.gctl button:hover{color:var(--accent)}
+.strip{position:relative;direction:ltr;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.strip::-webkit-scrollbar{display:none}
+.strack{display:flex;gap:12px;width:max-content;padding-block:8px}
+.sh{position:relative;flex:none;width:clamp(170px,21vw,250px);aspect-ratio:3/2;overflow:hidden;padding:0;border:0;background:#0c0d0f;cursor:zoom-in}
+.sh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease,filter .3s;filter:brightness(.82)}
+.sh:hover img,.sh:focus-visible img{transform:scale(1.06);filter:brightness(1)}
+.lbx{position:fixed;inset:0;z-index:20;background:rgba(8,8,10,.94);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lbx img{max-width:100%;max-height:100%;object-fit:contain}
+.lbx button{position:absolute;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font:500 20px/1 var(--mono);cursor:pointer}
+.lbx button:hover{background:var(--accent);color:var(--accent-ink)}
+.lbx .lx{top:calc(16px + env(safe-area-inset-top,0px));inset-inline-end:calc(16px + env(safe-area-inset-right,0px))}
+.lbx .lp{inset-inline-start:calc(16px + env(safe-area-inset-left,0px));top:50%;translate:0 -50%}
+.lbx .ln{inset-inline-end:calc(16px + env(safe-area-inset-right,0px));top:50%;translate:0 -50%}
+.edit-fab.ask::after{content:"";position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff5a4f;box-shadow:0 0 0 2px var(--bg)}
+.lq{display:grid;gap:10px;border:1px solid #ff5a4f;padding:12px;font:14px/1.5 var(--he)}
+.lq b{color:#ff8a80;font-weight:600}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:6px}
+.lt{position:relative;aspect-ratio:1;background:#000;border:1px solid var(--line);cursor:pointer;padding:4px}
+.lt img{width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1)}
+.lt.off{opacity:.3;border-color:#ff5a4f}
+.lt.off::after{content:"מוסתר";position:absolute;inset:auto 0 0;font:500 11px/1.6 var(--he);background:#ff5a4f;color:#fff}
+.swatches{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.sw.on{border-color:var(--fg)}
+.swatches input[type=color]{width:40px;height:32px;padding:0;border:1px solid var(--line);background:none;cursor:pointer}
 .gcount{font:500 12px/1 var(--mono);color:var(--muted);min-width:48px;text-align:center;font-variant-numeric:tabular-nums;direction:ltr}
 @media (max-width:860px){
 .cols{grid-template-columns:1fr;gap:32px}
@@ -277,7 +296,7 @@ people: [
 };
 window.FILMS = [
 {
-slug: "tfl", status: "released", title: "The First Lady", year: 2025, runtime: "82 min",
+slug: "tfl", color: "#f90a5a", status: "released", title: "The First Lady", year: 2025, runtime: "82 min",
 logline: "Israeli transgender pioneer Efrat Tilma had to flee the country as a teenager. Now in her seventies and a celebrated activist, she must fight for her rights once again, while the country spirals into political and social regression.",
 quotes: [
 ["A masterful, striking, and breathtaking film.", "Mako"],
@@ -637,7 +656,8 @@ function layoutMarks(root = document) {
 root.querySelectorAll(".marks").forEach(box => {
 const logo = box.dataset.kind === "logo";
 const A = logo ? 3000 : 8200, maxH = logo ? 46 : 92, maxW = logo ? 170 : 220;
-const items = [...box.querySelectorAll(".mk")].map(el => {
+const all = [...box.querySelectorAll(".mk")];
+const items = all.filter(el => !el.dataset.hide).map(el => {
 const b = BOX[el.dataset.id.replace("f84179_", "").replace(/~mv2.*$/, "")] || [0, 0, 1, 1, .25, 1];
 const [fx, fy, fw, fh, ink, asp] = b, r = fw / fh * asp;
 const k = Math.min(1.3, Math.max(.75, Math.sqrt(.25 / (ink || .25))));
@@ -645,11 +665,29 @@ let h = Math.min(maxH, Math.sqrt(A * k / r)), w = h * r;
 if (w > maxW) { w = maxW; h = w / r; }
 return { el, fx, fy, fw, fh, w, h };
 });
+all.forEach(el => el.classList.toggle("off", !!el.dataset.hide));
+const W = box.clientWidth;
 if (logo) {
-const W = box.clientWidth, gap = W < 600 ? 14 : 28, sum = items.reduce((a, x) => a + x.w, 0);
+const gap = W < 600 ? 14 : 28, sum = items.reduce((a, x) => a + x.w, 0);
 const sc = Math.min(1, (W - gap * (items.length - 1)) / sum);
 box.style.gap = gap + "px";
 items.forEach(x => { x.w *= sc; x.h *= sc; });
+} else if (W) {
+const gap = W < 600 ? 16 : 30, minSc = W < 600 ? .5 : .78;
+const plan = list => { for (let r = 1; r <= list.length; r++) { if (list.length % r) continue; const c = list.length / r; if (r > 1 && c < 2) break;
+let worst = 1; for (let i = 0; i < list.length; i += c) { const row = list.slice(i, i + c); worst = Math.min(worst, (W - gap * (c - 1)) / row.reduce((a, x) => a + x.w, 0)); }
+if (Math.min(1, worst) >= minSc) return { c, sc: Math.min(1, worst) }; } return null; };
+let use = items, p = plan(use), cut = 0;
+while (!p && use.length > 1) { cut++; use = items.slice(0, items.length - cut); p = plan(use); }
+if (!p) p = { c: 1, sc: 1 };
+items.slice(use.length).forEach(x => x.el.classList.add("off"));
+box.dataset.over = cut; box.dataset.total = items.length;
+box.querySelectorAll(".mrow").forEach(r => r.replaceWith(...r.children));
+box.style.gap = gap * .6 + "px";
+for (let i = 0; i < use.length; i += p.c) { const row = document.createElement("div"); row.className = "mrow"; row.style.gap = gap + "px"; use.slice(i, i + p.c).forEach(x => row.append(x.el)); box.append(row); }
+items.forEach(x => box.querySelector(".mrow") && !x.el.parentElement.classList.contains("mrow") && box.append(x.el));
+use.forEach(x => { x.w *= p.sc; x.h *= p.sc; });
+const fab = document.getElementById("fab"); if (fab && root === document) fab.classList.toggle("ask", cut > 0);
 }
 items.forEach(({ el, fx, fy, fw, fh, w, h }) => {
 el.style.width = w + "px"; el.style.height = h + "px";
@@ -658,19 +696,42 @@ Object.assign(im.style, { width: iw + "px", height: ih + "px", left: -fx * iw + 
 });
 });
 }
-let gtimer = null;
+let gtimer = 0;
 function startGallery(root = document) {
-clearInterval(gtimer);
-const g = root.querySelector(".fgal"); if (!g) return;
-const slides = [...g.querySelectorAll(".gs")], cnt = g.querySelector(".gcount"); let cur = 0;
-const go = n => { cur = (n + slides.length) % slides.length; slides.forEach((s, i) => s.classList.toggle("on", i === cur)); cnt.textContent = `${cur + 1} / ${slides.length}`; };
-const tick = () => { clearInterval(gtimer); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) gtimer = setInterval(() => go(cur + 1), 5000); };
-g.querySelector(".gprev").onclick = () => { go(cur - 1); tick(); };
-g.querySelector(".gnext").onclick = () => { go(cur + 1); tick(); };
-tick();
+cancelAnimationFrame(gtimer);
+const st = root.querySelector(".strip"); if (!st) return;
+const track = st.querySelector(".strack"), reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let v = reduce ? 0 : .35, target = v, pos = st.scrollLeft, last = performance.now(), hold = 0;
+st.onmousemove = e => { const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; target = Math.abs(x) < .12 ? 0 : x * 9; };
+st.onmouseleave = () => { target = reduce ? 0 : .35; };
+st.addEventListener("touchstart", () => { hold = 1; target = 0; }, { passive: true });
+st.addEventListener("touchend", () => { hold = 0; pos = st.scrollLeft; setTimeout(() => { if (!hold) target = reduce ? 0 : .35; }, 2500); }, { passive: true });
+const step = now => {
+const dt = Math.min(48, now - last) / 16.7; last = now;
+v += (target - v) * .06 * dt;
+const half = track.scrollWidth / 2;
+if (!hold && Math.abs(v) > .01) { pos += v * dt; if (pos >= half) pos -= half; if (pos < 0) pos += half; st.scrollLeft = pos; } else pos = st.scrollLeft;
+gtimer = requestAnimationFrame(step);
+};
+gtimer = requestAnimationFrame(step);
 }
+function openLightbox(list, i) {
+const box = document.createElement("div"); box.className = "lbx"; box.setAttribute("role", "dialog");
+const show = () => { const id = list[i], t = tr(id).match(/"(.+)"/), im = box.querySelector("img");
+im.src = img(id, 2400);
+if (t) { const [fx, fy, fw, fh] = t[1].split(",").map(Number); im.style.clipPath = `inset(${fy * 100}% ${(1 - fx - fw) * 100}% ${(1 - fy - fh) * 100}% ${fx * 100}%)`; } else im.style.clipPath = ""; };
+box.innerHTML = `<img alt=""><button class="lp" aria-label="${t("prev")}">${lang === "he" ? "→" : "←"}</button><button class="ln" aria-label="${t("next")}">${lang === "he" ? "←" : "→"}</button><button class="lx" aria-label="close">×</button>`;
+const close = () => { box.remove(); removeEventListener("keydown", key); };
+const go = d => { i = (i + d + list.length) % list.length; show(); };
+const key = e => { if (e.key === "Escape") close(); if (e.key === "ArrowRight") go(lang === "he" ? -1 : 1); if (e.key === "ArrowLeft") go(lang === "he" ? 1 : -1); };
+box.onclick = e => { if (e.target.closest(".lp")) go(-1); else if (e.target.closest(".ln")) go(1); else close(); };
+addEventListener("keydown", key); document.body.append(box); show(); box.querySelector(".lx").focus();
+}
+document.addEventListener("click", e => { const b = e.target.closest(".sh"); if (!b) return; const list = b.closest(".strip").dataset.ids.split("|"); openLightbox(list, +b.dataset.i); });
 addEventListener("resize", () => { layoutPosters(); layoutMarks(); fitTrim(); });
 const M = f => MEDIA[f.slug] || {gallery: [], partners: [], laurels: []};
+const inkFor = hex => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255].map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2] > .18 ? "#140a0e" : "#ffffff"; };
+const tint = f => /^#[0-9a-f]{6}$/i.test(f.color || "") ? `--accent:${f.color};--accent-ink:${inkFor(f.color)}` : "";
 const tr = id => { const k = String(id || "").split("_").pop().split("~")[0], v = (window.TRIM || {})[k]; return v ? ` data-t="${v.join(",")}"` : ""; };
 function fitTrim(root = document) {
 root.querySelectorAll("img[data-t]").forEach(im => {
@@ -696,7 +757,7 @@ const pic = id ? `<img src="${img(id, w)}"${tr(id)} alt="" ${eager ? "" : `loadi
 return `<div class="frame ${ratio}${id ? " has-img" : ""}">${pic}${inner}${!id && tc ? `<span class="tc">${esc(tc)}</span>` : ""}${!id ? `<span class="cap">${esc(cap)}</span>` : ""}</div>`;
 }
 function posterCard(f) {
-return `<a class="poster" href="${R("f-" + f.slug)}">
+return `<a class="poster" href="${R("f-" + f.slug)}" style="${tint(f)}">
 ${M(f).poster ? `<div class="frame r23 has-img"><img src="${img(M(f).poster, 600)}" alt="${esc(L(f, "title"))}" loading="lazy"></div><span class="pn">${esc(L(f, "title"))}</span>` : `<div class="frame r23 has-img"><img src="${img(key(f), 900)}"${tr(key(f))} alt="" loading="lazy"><span class="pt">${esc(L(f, "title"))}</span></div>`}
 <span class="py">${f.year}${f.status === "production" ? " · " + t("inProd") : ""}</span></a>`;
 }
@@ -715,7 +776,7 @@ ${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>`
 const upcoming = () => SCREENINGS.filter(s => new Date(s.date + "T23:59:59") >= new Date()).sort((a, b) => a.date.localeCompare(b.date));
 function pageHome() {
 const all = slideList(), up = upcoming();
-const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}">
+const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}" style="${tint(f)}">
 ${frame("r169", "KEY IMAGE", "", "", key(f), 2000, i === 0)}
 <div class="over"><div class="eyebrow">${f.status === "production" ? t("inProd") : (i === all.findIndex(x => x.status === "released") ? t("newFilm") : t("doc"))} · ${f.year}</div>
 <h1>${esc(L(f, "title"))}</h1><p class="lede">${esc(L(f, "logline"))}</p>
@@ -750,14 +811,15 @@ if (team.length) side.push(`<div><h3>${t("team")}</h3><dl class="credits">${team
 if (tech.length) side.push(`<div><h3>${t("tech")}</h3><dl class="credits">${tech.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}</dl></div>`);
 if (pitching.length) side.push(`<div><h3>${esc(pTitle)}</h3><ul class="plain">${pitching.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`);
 if (links.length) side.push(`<div><h3>${t("links")}</h3><ul class="plain">${links.map(([x, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(x)} ↗</a></li>`).join("")}</ul></div>`);
-const mark = (id, alt) => `<span class="mk" data-id="${id}"><img src="${img(id, 600)}" alt="${esc(alt || "")}" loading="lazy"></span>`;
-const laurels = media.laurels.length ? `<section class="section laurels-band"><div class="marks laurels" data-kind="laurel">${media.laurels.map(id => mark(id)).join("")}</div></section>` : "";
+const mark = (id, alt, hide) => `<span class="mk" data-id="${id}"${hide ? ` data-hide="1"` : ""}><img src="${img(id, 600)}" alt="${esc(alt || "")}" loading="lazy"></span>`;
+const hid = media.laurelsHidden || [];
+const laurels = media.laurels.length ? `<section class="section laurels-band"><div class="marks laurels" data-kind="laurel">${media.laurels.map(id => mark(id, "", hid.includes(id))).join("")}</div></section>` : "";
 const partners = media.partners.length ? `<section class="section"><h3>${t("supported")}</h3><div class="marks logos" data-kind="logo">${media.partners.map((id, i) => mark(id, f.partners[i])).join("")}</div></section>` : "";
 const still = gal[1] || gal[0] || key(f);
 const trailer = f.trailer ? `<section class="section"><div class="trailer-box" data-v="${esc(f.trailer)}">${still ? `<img src="${img(still, 2000)}"${tr(still)} alt="" loading="lazy">` : ""}<button class="tplay" type="button" aria-label="${esc(t("trailer").replace("▶ ", ""))}"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a.6.6 0 0 0 .9.5l12-7.5a.6.6 0 0 0 0-1L7.9 4a.6.6 0 0 0-.9.5z"/></svg></span><span class="lbl">${esc(t("trailer").replace("▶ ", ""))}</span></button></div></section>` : "";
-const gallery = gal.length > 1 ? `<section class="section${f.trailer ? " media" : ""}"><div class="fgal" data-n="${gal.length}">${gal.map((id, i) => `<div class="gs ${i ? "" : "on"}"><img src="${img(id, 1800)}"${tr(id)} alt="" loading="${i < 2 ? "eager" : "lazy"}"></div>`).join("")}
-<div class="gctl"><button class="gprev" aria-label="${t("prev")}">${lang === "he" ? "→" : "←"}</button><span class="gcount">1 / ${gal.length}</span><button class="gnext" aria-label="${t("next")}">${lang === "he" ? "←" : "→"}</button></div></div></section>` : "";
-return `<section class="film-hero">
+const shots = gal.length > 1 ? [...gal, ...gal].map((id, i) => `<button class="sh" type="button" data-i="${i % gal.length}"${i >= gal.length ? ` aria-hidden="true" tabindex="-1"` : ""}><img src="${img(id, 700)}"${tr(id)} alt="" loading="lazy"></button>`).join("") : "";
+const gallery = gal.length > 1 ? `<section class="section${f.trailer ? " media" : ""}"><div class="strip" data-ids="${gal.join("|")}"><div class="strack">${shots}</div></div></section>` : "";
+return `<div class="film" style="${tint(f)}"><section class="film-hero">
 ${key(f) ? `<img class="bg" src="${img(key(f), 2400)}"${tr(key(f))} alt="">` : ""}
 <div class="wrap hero-in">
 <div class="hero-text">
@@ -778,7 +840,7 @@ ${trailer}
 ${gallery}
 <section class="section"><div class="cols"><div class="stack">${blocks.join("")}</div><div class="stack">${side.join("")}</div></div></section>
 ${partners}
-</div>`;
+</div></div>`;
 }
 function pageBio() {
 const people = lang === "he" ? SITE_HE.people : SITE.people;
@@ -806,6 +868,18 @@ $("#prev").onclick = () => { go(cur - 1); tick(); };
 $("#next").onclick = () => { go(cur + 1); tick(); };
 thumbs.forEach(b => b.onclick = () => { go(+b.dataset.go); tick(); });
 tick();
+}
+async function posterColors(id) {
+if (!id) return [];
+try {
+const im = new Image(); im.crossOrigin = "anonymous"; im.src = img(id, 200); await im.decode();
+const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight; const x = c.getContext("2d"); x.drawImage(im, 0, 0);
+const d = x.getImageData(0, 0, c.width, c.height).data, bins = {};
+for (let i = 0; i < d.length; i += 8) { const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), dl = mx - mn;
+if (dl < .28 || mx < .45) continue; let h = mx === r ? ((g - b) / dl) % 6 : mx === g ? (b - r) / dl + 2 : (r - g) / dl + 4; h = Math.round(((h * 60 + 360) % 360) / 20) % 18;
+const o = bins[h] = bins[h] || { n: 0, r: 0, g: 0, b: 0, s: 0 }; o.n++; if (mx + dl > o.s) { o.s = mx + dl; o.r = d[i]; o.g = d[i + 1]; o.b = d[i + 2]; } }
+return Object.values(bins).sort((a, b) => a.n - b.n).slice(-5).map(o => "#" + [o.r, o.g, o.b].map(v => v.toString(16).padStart(2, "0")).join(""));
+} catch (e) { return []; }
 }
 let edSlug = "tfl", edLang = "en";
 const LISTS = [
@@ -844,6 +918,8 @@ return `<div class="ed">
 <div class="f"><label for="title">שם הסרט</label><input class="${dirCls}" id="title" data-f="title" value="${g("title")}"></div>
 <div class="f" style="grid-template-columns:1fr 1fr;column-gap:8px"><label for="year">שנה</label><label for="runtime">אורך</label>
 <input class="ltr" id="year" data-f="year" data-shared="1" value="${esc(f.year)}"><input class="ltr" id="runtime" data-f="runtime" data-shared="1" value="${esc(f.runtime)}"></div>
+<div class="f"><label>צבע הדגשה של הסרט</label><div class="swatches" id="swatches"><input type="color" id="color" value="${/^#[0-9a-f]{6}$/i.test(f.color || "") ? f.color : "#e2c48f"}" aria-label="בחירת צבע"></div></div>
+<div id="lq"></div>
 <div class="f"><label for="logline">משפט מפתח</label><textarea class="${dirCls}" id="logline" data-f="logline" style="min-height:70px">${g("logline")}</textarea></div>
 <div class="f"><label for="synopsis">תקציר</label><textarea class="${dirCls}" id="synopsis" data-f="synopsis">${g("synopsis")}</textarea></div>
 ${lists}
@@ -855,8 +931,21 @@ ${lists}
 }
 function bindEditor() {
 const f = bySlug(edSlug), live = $("#live");
-const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageFilm(f); lang = keep; layoutMarks(live); startGallery(live); };
+const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageFilm(f); lang = keep; document.documentElement.style.cssText = tint(f); layoutMarks(live); fitTrim(live); startGallery(live); askLaurels(); };
+const askLaurels = () => {
+const box = live.querySelector(".marks.laurels"), q = $("#lq"), m = M(f), hid = m.laurelsHidden || [];
+if (!box) { q.innerHTML = ""; return; }
+const over = +box.dataset.over, total = +box.dataset.total;
+const tiles = m.laurels.map(id => `<button type="button" class="lt ${hid.includes(id) || [...box.querySelectorAll(".mk.off")].some(e => e.dataset.id === id && !e.dataset.hide) ? "off" : ""}" data-lid="${id}"><img src="${img(id, 200)}" alt=""></button>`).join("");
+q.innerHTML = over ? `<div class="lq"><span><b>הפסטיבלים לא מסתדרים בשורות שוות.</b> יש ${total}, צריך להסתיר ${over} עד שיתווספו עוד. כרגע הוסתרו האחרונים. לחץ על מה להסתיר במקומם:</span><div class="lgrid">${tiles}</div></div>`
+: (hid.length ? `<details class="more"><summary><span>פסטיבלים מוסתרים · ${hid.length}</span><span class="plus">+</span></summary><div class="lgrid" style="margin-top:8px">${tiles}</div></details>` : "");
+q.querySelectorAll("[data-lid]").forEach(b => b.onclick = () => { const id = b.dataset.lid, h2 = m.laurelsHidden = m.laurelsHidden || [];
+const i = h2.indexOf(id); if (i >= 0) h2.splice(i, 1); else h2.push(id); redraw(); });
+};
 redraw();
+const setColor = c => { f.color = c; $("#color").value = c; document.querySelectorAll(".sw").forEach(b => b.classList.toggle("on", b.dataset.c === c)); redraw(); };
+$("#color").oninput = e => setColor(e.target.value);
+posterColors(M(f).poster).then(cs => { const sw = $("#swatches"); if (!sw) return; cs.forEach(c => { const b = document.createElement("button"); b.type = "button"; b.className = "sw" + (c === f.color ? " on" : ""); b.dataset.c = c; b.style.background = c; b.title = "צבע מהפוסטר"; b.onclick = () => setColor(c); sw.prepend(b); }); });
 $("#pick").onchange = e => { edSlug = e.target.value; render(); };
 document.querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { edLang = b.dataset.lg; render(); });
 document.querySelectorAll("[data-st]").forEach(b => b.onclick = () => { f.status = b.dataset.st; render(); });
@@ -908,7 +997,7 @@ if (b.dataset.mv === "1" && li.nextElementSibling) ul.insertBefore(li.nextElemen
 });
 }
 function render() {
-clearInterval(timer); clearInterval(gtimer);
+clearInterval(timer); cancelAnimationFrame(gtimer);
 let h = (location.hash || "#home").slice(1);
 lang = h.startsWith("he-") ? "he" : "en";
 if (lang === "he") h = h.slice(3);
@@ -933,6 +1022,9 @@ const other = lang === "he" ? "#" + h : "#he-" + h;
 const isEd = h === "edit" || h === "edit-home";
 $("#lang").href = isEd ? "#home" : other;
 $("#lang").textContent = isEd ? "לאתר" : t("switchTo");
+$("#fab").classList.remove("ask");
+const fp = h.startsWith("f-") && bySlug(h.slice(2));
+document.documentElement.style.cssText = fp ? tint(fp) : "";
 $("#app").innerHTML = html;
 $("#foot").innerHTML = footer();
 $("#foot").hidden = isEd;
