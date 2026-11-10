@@ -210,9 +210,10 @@ details.more .rows{display:grid;gap:8px;margin-top:10px}
 .mrow{display:flex;align-items:center;justify-content:center}
 .mk.off{display:none}
 .marks.folded .mrow.extra{display:none}
-.mmore{display:grid;place-items:center;margin:14px auto 0;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.06);color:var(--fg);cursor:pointer;transition:background .2s,color .2s}
+.marks.has-more{position:relative}
+.mmore{position:absolute;inset-inline-end:0;translate:0 -50%;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.07);color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
 .mmore:hover{background:var(--accent);color:var(--accent-ink)}
-.mmore svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+.mmore svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
 .mmore.up svg{transform:rotate(180deg)}
 .eyedrop{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;background:transparent;border:1px solid var(--line);color:var(--fg);font:500 13px/1 var(--he);cursor:pointer}
 .eyedrop:hover,.eyedrop.on{border-color:var(--accent);color:var(--accent)}
@@ -228,6 +229,17 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .person .frame{max-width:420px}
 @media (max-width:860px){.hero-poster{display:none}.hero-in{padding-block:80px 24px}.film-hero{min-height:440px}.laurels img{height:48px}}
 .pgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:40px 28px}
+.wcard{display:grid;gap:12px;align-content:start;text-decoration:none;color:inherit}
+.wcard .frame img{transition:transform .8s ease,filter .4s;filter:brightness(.88)}
+.wcard:hover .frame img:not([data-t]){transform:scale(1.03)}
+.wcard:hover .frame img{filter:brightness(1)}
+.wt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid transparent}
+.wn{font:500 20px/1.25 var(--display);letter-spacing:.01em;transition:color .2s}
+.wn:dir(rtl){font-weight:500}
+.wcard:hover .wn{color:var(--accent)}
+.wy{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.08em;flex:none}
+.wl{margin:0;font-size:14px;line-height:1.55;color:var(--muted);max-width:60ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pgrid .poster{width:180px;flex:none}
 .scr{grid-template-columns:76px minmax(0,1.3fr) minmax(0,1fr) 210px}
 .edtabs{display:flex;border-bottom:1px solid var(--line);gap:4px}
@@ -712,26 +724,30 @@ const sc = Math.min(1, (W - gap * (items.length - 1)) / sum);
 box.style.gap = gap + "px";
 items.forEach(x => { x.w *= sc; x.h *= sc; });
 } else if (W) {
-const gap = W < 600 ? 16 : 30, minSc = W < 600 ? .5 : .78;
+let W = box.clientWidth; const gap = W < 600 ? 16 : 30, minSc = W < 600 ? .5 : .78;
 const plan = list => { for (let r = 1; r <= list.length; r++) { if (list.length % r) continue; const c = list.length / r; if (r > 1 && c < 2) break;
 let worst = 1; for (let i = 0; i < list.length; i += c) { const row = list.slice(i, i + c); worst = Math.min(worst, (W - gap * (c - 1)) / row.reduce((a, x) => a + x.w, 0)); }
 if (Math.min(1, worst) >= minSc) return { c, sc: Math.min(1, worst) }; } return null; };
 let use = items, p = plan(use), cut = 0;
 while (!p && use.length > 1) { cut++; use = items.slice(0, items.length - cut); p = plan(use); }
 if (!p) p = { c: 1, sc: 1 };
+const side = W < 600 ? 30 : 56;
+if (use.length / p.c > 2) { const W0 = W, c0 = p.c; W = W0 - 2 * side; const p2 = plan(use); if (p2 && p2.c >= c0) p = p2; else p = { c: c0, sc: Math.min(p.sc, (W - gap * (c0 - 1)) / Math.max(...Array.from({ length: use.length / c0 }, (_, i) => use.slice(i * c0, i * c0 + c0).reduce((a, x) => a + x.w, 0)))) }; W = W0; }
 items.slice(use.length).forEach(x => x.el.classList.add("off"));
 box.dataset.over = cut; box.dataset.total = items.length;
 box.querySelectorAll(".mrow").forEach(r => r.replaceWith(...r.children));
 box.style.gap = gap * .6 + "px";
 for (let i = 0; i < use.length; i += p.c) { const row = document.createElement("div"); row.className = "mrow"; row.style.gap = gap + "px"; use.slice(i, i + p.c).forEach(x => row.append(x.el)); box.append(row); }
-const rows = [...box.querySelectorAll(".mrow")]; rows.forEach((r, i) => r.classList.toggle("extra", i >= 2));
-let more = box.nextElementSibling && box.nextElementSibling.classList.contains("mmore") ? box.nextElementSibling : null;
-if (!more) { more = document.createElement("button"); more.type = "button"; more.className = "mmore"; more.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`; box.after(more); }
-const open = box.dataset.open === "1";
-more.hidden = rows.length <= 2; box.classList.toggle("folded", rows.length > 2 && !open); more.classList.toggle("up", open);
-more.setAttribute("aria-expanded", open); more.setAttribute("aria-label", document.documentElement.lang === "he" ? (open ? "פחות" : "עוד פסטיבלים") : (open ? "Less" : "More festivals"));
 items.forEach(x => box.querySelector(".mrow") && !x.el.parentElement.classList.contains("mrow") && box.append(x.el));
 use.forEach(x => { x.w *= p.sc; x.h *= p.sc; });
+const rows = [...box.querySelectorAll(".mrow")]; rows.forEach((r, i) => r.classList.toggle("extra", i >= 2));
+let more = box.querySelector(".mmore");
+if (!more) { more = document.createElement("button"); more.type = "button"; more.className = "mmore"; more.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`; box.append(more); }
+const open = box.dataset.open === "1", folds = rows.length > 2;
+more.hidden = !folds; box.classList.toggle("folded", folds && !open); box.classList.toggle("has-more", folds); more.classList.toggle("up", open);
+box.style.paddingInline = folds ? side + "px" : "";
+more.setAttribute("aria-expanded", open); more.setAttribute("aria-label", document.documentElement.lang === "he" ? (open ? "פחות" : "עוד פסטיבלים") : (open ? "Less" : "More festivals"));
+if (folds) requestAnimationFrame(() => { const r1 = rows[0], r2 = rows[1]; more.style.top = (r1.offsetTop + r1.offsetHeight + r2.offsetTop) / 2 + "px"; });
 const fab = document.getElementById("fab"); if (fab && root === document) fab.classList.toggle("ask", cut > 0);
 }
 items.forEach(({ el, fx, fy, fw, fh, w, h }) => {
@@ -772,7 +788,7 @@ const key = e => { if (e.key === "Escape") close(); if (e.key === "ArrowRight") 
 box.onclick = e => { if (e.target.closest(".lp")) go(-1); else if (e.target.closest(".ln")) go(1); else close(); };
 addEventListener("keydown", key); document.body.append(box); show(); box.querySelector(".lx").focus();
 }
-document.addEventListener("click", e => { const b = e.target.closest(".mmore"); if (!b) return; const box = b.previousElementSibling; box.dataset.open = box.dataset.open === "1" ? "" : "1"; layoutMarks(box.parentElement); });
+document.addEventListener("click", e => { const b = e.target.closest(".mmore"); if (!b) return; const box = b.closest(".marks"); box.dataset.open = box.dataset.open === "1" ? "" : "1"; layoutMarks(box.parentElement); });
 document.addEventListener("click", e => { const b = e.target.closest(".sh"); if (!b) return; const list = b.closest(".strip").dataset.ids.split("|"); openLightbox(list, +b.dataset.i); });
 addEventListener("resize", () => { layoutPosters(); layoutMarks(); fitTrim(); });
 const M = f => MEDIA[f.slug] || (MEDIA[f.slug] = {gallery: [], partners: [], laurels: []});
@@ -808,6 +824,12 @@ return `<a class="poster" href="${R("f-" + f.slug)}" style="${tint(f)}">
 ${M(f).poster ? `<div class="frame r23 has-img"><img src="${img(M(f).poster, 600)}" alt="${esc(L(f, "title"))}" loading="lazy"></div><span class="pn">${esc(L(f, "title"))}</span>` : `<div class="frame r23 has-img"><img src="${img(key(f), 900)}"${tr(key(f))} alt="" loading="lazy"><span class="pt">${esc(L(f, "title"))}</span></div>`}
 <span class="py">${f.year}${f.status === "production" ? " · " + t("inProd") : ""}</span></a>`;
 }
+function wideCard(f) {
+return `<a class="wcard" href="${R("f-" + f.slug)}" style="${tint(f)}">
+<div class="frame r169 has-img"><img src="${img(key(f), 1400)}"${tr(key(f))} alt="" loading="lazy"></div>
+<div class="wt"><span class="wn">${esc(L(f, "title"))}</span><span class="wy">${f.year}</span></div>
+${L(f, "logline") ? `<p class="wl">${esc(L(f, "logline"))}</p>` : ""}</a>`;
+}
 function screeningsList(list, showFilm = true) {
 if (!list.length) return `<div class="screen-empty">${t("noScreen")}</div>`;
 const i = lang === "he" ? 1 : 0;
@@ -840,7 +862,7 @@ ${(lang === "he" ? SITE_HE.tagline : SITE.tagline) ? `<section class="section"><
 function pageList(kind) {
 const list = ordered().filter(f => f.status === kind);
 return `<div class="wrap"><section class="film-head"><h1>${kind === "released" ? t("films") : t("prod")}</h1></section>
-<section class="section" style="border:0"><div class="pgrid">${(kind === "released" ? posterList() : list).map(posterCard).join("")}</div></section></div>`;
+<section class="section" style="border:0">${kind === "released" ? `<div class="pgrid">${posterList().map(posterCard).join("")}</div>` : `<div class="wgrid">${list.map(wideCard).join("")}</div>`}</section></div>`;
 }
 function pageFilm(f) {
 const media = M(f), gal = ML(f, "gallery"), laurelIds = ML(f, "laurels"), partnerIds = ML(f, "partners");
