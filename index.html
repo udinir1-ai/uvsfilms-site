@@ -274,8 +274,13 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .edtabs a{padding:8px 12px;text-decoration:none;color:var(--muted);font:500 14px/1 var(--he);border-bottom:2px solid transparent;margin-bottom:-1px}
 .edtabs a.on{color:var(--fg);border-color:var(--accent)}
 .sortable{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.srt{display:grid;grid-template-columns:18px 44px minmax(0,1fr) 28px 28px;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:6px 8px;cursor:grab}
+.srt{display:grid;grid-template-columns:18px 44px minmax(0,1fr) 28px 28px 28px;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:6px 8px;cursor:grab}
 .srt.dragging{opacity:.4}
+.srt .eye{width:28px;height:28px;display:grid;place-items:center;background:transparent;border:0;color:var(--fg);cursor:pointer}
+.srt .eye svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6}
+.srt.off{opacity:.45}.srt.off .nm{text-decoration:line-through}
+.srt.off .eye svg{stroke:var(--muted)}
+.srt.off .eye{position:relative}.srt.off .eye::after{content:"";position:absolute;width:20px;height:1.6px;background:var(--muted);transform:rotate(-40deg)}
 .srt img{width:44px;height:30px;object-fit:cover}
 .srt .grip{color:var(--muted);font-size:12px;letter-spacing:-2px}
 .srt .nm{font:500 14px/1.3 var(--he);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -790,8 +795,12 @@ const linksOf = f => { const he = lang === "he" && HE[f.slug] && HE[f.slug].link
 const ordered = () => [...FILMS].sort((a, b) => b.year - a.year);
 const released = () => ordered().filter(f => f.status === "released");
 const byOrder = (order, list) => [...list].sort((a, b) => { const i = order.indexOf(a.slug), j = order.indexOf(b.slug); return (i < 0 ? 999 : i) - (j < 0 ? 999 : j); });
-const slideList = () => byOrder(SITE.slideOrder || [], [...released(), ...ordered().filter(f => f.status !== "released")]);
-const posterList = () => byOrder(SITE.posterOrder || [], released());
+const LISTDEF = { slide: ["slideOrder", () => [...released(), ...ordered().filter(f => f.status !== "released")]], poster: ["posterOrder", () => released()],
+films: ["filmsOrder", () => released()], prod: ["prodOrder", () => ordered().filter(f => f.status === "production")] };
+const listAll = k => byOrder(SITE[LISTDEF[k][0]] || (k === "films" ? SITE.posterOrder : null) || [], LISTDEF[k][1]());
+const listShown = k => { const off = (SITE.hide || {})[k] || []; return listAll(k).filter(f => !off.includes(f.slug)); };
+const slideList = () => listShown("slide");
+const posterList = () => listShown("poster");
 function layoutPosters() {
 document.querySelectorAll(".pgrid").forEach(g => {
 const items = [...g.children], n = items.length; if (!n) return;
@@ -1062,9 +1071,9 @@ return `<div class="wrap">
 </div>`;
 }
 function pageList(kind) {
-const list = ordered().filter(f => f.status === kind);
+const list = listShown("prod");
 return `<div class="wrap"><section class="film-head"><h1>${kind === "released" ? t("films") : t("prod")}</h1></section>
-<section class="section" style="border:0">${kind === "released" ? posterRow(posterList()) : `<div class="wgrid">${list.map(wideCard).join("")}</div>`}</section></div>`;
+<section class="section" style="border:0">${kind === "released" ? posterRow(listShown("films")) : `<div class="wgrid">${list.map(wideCard).join("")}</div>`}</section></div>`;
 }
 function pageFilm(f) {
 const media = M(f), gal = ML(f, "gallery"), laurelIds = ML(f, "laurels"), partnerIds = ML(f, "partners");
@@ -1291,29 +1300,38 @@ document.querySelectorAll("[data-ord]").forEach(b => b.onclick = () => { const k
 bindImgLists(f, reopen);
 }
 function pageEditHome() {
-const rows = (list, kind) => list.map(f => `<li class="srt" draggable="true" data-slug="${f.slug}" data-list="${kind}"><span class="grip" aria-hidden="true">⋮⋮</span><img src="${img(kind === "poster" && M(f).poster ? M(f).poster : key(f), 160)}" alt=""><span class="nm">${esc(L(f, "title"))}</span><button class="mv" data-mv="-1" title="למעלה">↑</button><button class="mv" data-mv="1" title="למטה">↓</button></li>`).join("");
+const off = k => (SITE.hide || {})[k] || [];
+const rows = (list, kind) => list.map(f => `<li class="srt${off(kind).includes(f.slug) ? " off" : ""}" draggable="true" data-slug="${f.slug}" data-list="${kind}"><span class="grip" aria-hidden="true">⋮⋮</span><img src="${img((kind === "poster" || kind === "films") && ML(f, "poster", edLang) ? ML(f, "poster", edLang) : key(f), 160)}" alt=""><span class="nm">${esc(L(f, "title"))}</span><button class="eye" data-eye title="${off(kind).includes(f.slug) ? "להציג" : "להסתיר"}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button><button class="mv" data-mv="-1" title="למעלה">↑</button><button class="mv" data-mv="1" title="למטה">↓</button></li>`).join("");
+const block = (k, label) => `<details class="more" data-pv="${k}"${k === "slide" ? " open" : ""}><summary><span>${label}</span><span class="plus">+</span></summary><ul class="sortable" data-key="${k}">${rows(listAll(k), k)}</ul></details>`;
 const mode = SITE.posterRows || "auto";
 return `<div class="ed">
 <aside class="ed-form">
 <div class="edtabs"><a href="#edit">עמוד סרט</a><a class="on" href="#edit-home">עמוד הבית</a></div>
 <div class="ed-top"><h2>עמוד הבית</h2><a class="btn" href="#home" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${edLang === "he" ? "on" : ""}">עברית</button><button data-lg="en" class="${edLang === "he" ? "" : "on"}">English</button></div>
-<div class="f"><label>סדר הגלריה המתחלפת</label><ul class="sortable" data-key="slide">${rows(slideList(), "slide")}</ul></div>
-<div class="f"><label>סדר הפוסטרים</label><ul class="sortable" data-key="poster">${rows(posterList(), "poster")}</ul></div>
+${block("slide", "עמוד הבית · הגלריה המתחלפת")}
+${block("poster", "עמוד הבית · שורת הפוסטרים")}
+${block("films", "עמוד סרטים")}
+${block("prod", "עמוד בהפקה")}
 <div class="f"><label>צבע הדגשה של עמוד הבית</label><div class="swatches"><button type="button" class="eyedrop" id="eyedrop" title="לוחצים, ואז על כל נקודה בעמוד"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5l5 5M17 2.5a2.1 2.1 0 0 1 3 3l-2.5 2.5-3-3zM14.5 5L5 14.5V19h4.5L19 9.5"/></svg>דגימה מהעמוד</button><input type="color" id="color" value="${/^#[0-9a-f]{6}$/i.test(SITE.homeColor || "") ? SITE.homeColor : "#e2c48f"}" aria-label="בחירת צבע"></div></div>
-<div class="note">גוררים שורה למעלה או למטה, או לוחצים על החצים. גרסת הדגמה: עוד לא נשמר.</div>
+<div class="note">גוררים שורה או לוחצים על החצים. העין מסתירה סרט מהמקום הזה בלבד. גרסת הדגמה: עוד לא נשמר.</div>
 </aside>
-<section class="ed-preview"><div class="tag"><span>תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
+<section class="ed-preview"><div class="tag"><span id="pvname">תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
 </div>`;
 }
 function bindEditHome() {
 const live = $("#live");
-const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageHome(); lang = keep; document.documentElement.style.cssText = tint({ color: SITE.homeColor }); layoutPosters(); startShow(); startGallery(live); };
+let pv = "home";
+const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pv === "films" ? pageList("released") : pv === "prod" ? pageList("production") : pageHome(); lang = keep;
+$("#pvname").textContent = "תצוגה חיה · " + (pv === "films" ? "עמוד סרטים" : pv === "prod" ? "עמוד בהפקה" : "עמוד הבית");
+document.documentElement.style.cssText = pv === "home" ? tint({ color: SITE.homeColor }) : ""; layoutPosters(); startShow(); startGallery(live); fitTrim(live); };
+const show = k => { const p = k === "films" ? "films" : k === "prod" ? "prod" : "home"; if (p !== pv) { pv = p; redraw(); } };
+document.querySelectorAll("[data-pv]").forEach(d => d.addEventListener("toggle", () => { if (d.open) show(d.dataset.pv); }));
 const setColor = c => { SITE.homeColor = c; $("#color").value = c; redraw(); };
 $("#color").oninput = e => setColor(e.target.value);
 $("#eyedrop").onclick = () => sampleColor(setColor);
 redraw();
-const save = ul => { const k = ul.dataset.key === "slide" ? "slideOrder" : "posterOrder"; SITE[k] = [...ul.children].map(li => li.dataset.slug); redraw(); };
+const save = ul => { const k = ul.dataset.key; SITE[LISTDEF[k][0]] = [...ul.children].map(li => li.dataset.slug); pv = k === "films" ? "films" : k === "prod" ? "prod" : "home"; redraw(); };
 document.querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { edLang = b.dataset.lg; render(); });
 document.querySelectorAll("[data-rows]").forEach(b => b.onclick = () => { SITE.posterRows = b.dataset.rows; document.querySelectorAll("[data-rows]").forEach(x => x.classList.toggle("on", x === b)); redraw(); });
 document.querySelectorAll(".sortable").forEach(ul => {
@@ -1322,7 +1340,9 @@ ul.addEventListener("dragstart", e => { drag = e.target.closest(".srt"); drag.cl
 ul.addEventListener("dragend", () => { if (drag) drag.classList.remove("dragging"); drag = null; save(ul); });
 ul.addEventListener("dragover", e => { e.preventDefault(); const over = e.target.closest(".srt"); if (!drag || !over || over === drag || over.parentNode !== ul) return;
 const r = over.getBoundingClientRect(); ul.insertBefore(drag, e.clientY > r.top + r.height / 2 ? over.nextSibling : over); });
-ul.addEventListener("click", e => { const b = e.target.closest(".mv"); if (!b) return; const li = b.closest(".srt");
+ul.addEventListener("click", e => { const eye = e.target.closest("[data-eye]"); if (eye) { const li = eye.closest(".srt"), k = ul.dataset.key; SITE.hide = SITE.hide || {}; const list = SITE.hide[k] = SITE.hide[k] || [];
+const i = list.indexOf(li.dataset.slug); if (i >= 0) list.splice(i, 1); else list.push(li.dataset.slug); li.classList.toggle("off", i < 0); eye.title = i < 0 ? "להציג" : "להסתיר"; save(ul); return; }
+const b = e.target.closest(".mv"); if (!b) return; const li = b.closest(".srt");
 if (b.dataset.mv === "-1" && li.previousElementSibling) ul.insertBefore(li, li.previousElementSibling);
 if (b.dataset.mv === "1" && li.nextElementSibling) ul.insertBefore(li.nextElementSibling, li); save(ul); });
 });
