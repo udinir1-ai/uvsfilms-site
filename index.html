@@ -94,6 +94,13 @@ h3:dir(rtl){font:500 16px/1.2 var(--he);letter-spacing:0}
 .news svg{width:20px;height:20px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round}
 .news span{border-bottom:1px solid var(--accent);padding-bottom:2px;transition:color .2s}
 .news:hover span{color:var(--accent)}
+.nform{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;max-width:440px}
+.nform input{flex:1 1 220px;min-width:0;height:38px;padding:0 12px;background:transparent;border:1px solid var(--line);color:var(--fg);font:14px/1 var(--body);border-radius:4px}
+.nform input:focus{outline:none;border-color:var(--accent)}
+.nform button{height:38px;padding:0 18px;border:0;border-radius:4px;background:var(--accent);color:var(--accent-ink);font:600 14px/1 var(--body);cursor:pointer}
+.nform button:dir(rtl){font-family:var(--he)}
+.nform output{flex-basis:100%;font-size:13px;color:var(--muted)}
+.nform output.ok{color:var(--fg);font-size:14px}
 .watch{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .wl2{font-size:13px;color:var(--muted);margin-inline-end:4px}
 .wchip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:rgba(255,255,255,.07);color:var(--fg);text-decoration:none;font-size:14px;transition:background .2s,color .2s}
@@ -948,8 +955,20 @@ return `<a class="wcard" href="${R("f-" + f.slug)}" style="${tint(f)}">
 <div class="wt"><span class="wn">${esc(L(f, "title"))}</span><span class="wy">${f.year}</span></div>
 ${L(f, "logline") ? `<p class="wl">${esc(L(f, "logline"))}</p>` : ""}</a>`;
 }
-const newsHref = () => SITE.newsletter || `mailto:${SITE.emails[0]}?subject=${encodeURIComponent(lang === "he" ? "הרשמה לניוזלטר" : "Newsletter sign-up")}`;
-const newsNote = () => `<a class="news" href="${esc(newsHref())}"${/^https?:/.test(newsHref()) ? ` target="_blank" rel="noopener"` : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg><span>${t("news")}</span></a>`;
+/* clicking the line opens a small form: e-mail + subscribe. The address goes to the CineVerse mailing list (SITE.subscribeUrl);
+until that address exists, the visitor's own mail app opens a ready message to us so no sign-up is lost */
+const newsNote = () => `<div class="newsbox"><a class="news" href="#" data-news><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg><span>${t("news")}</span></a>
+<form class="nform" hidden><input type="email" required placeholder="${lang === "he" ? "כתובת מייל" : "Email address"}" aria-label="${lang === "he" ? "כתובת מייל" : "Email address"}" dir="ltr"><button type="submit">${lang === "he" ? "הרשמה" : "Subscribe"}</button><output></output></form></div>`;
+document.addEventListener("click", e => { const a = e.target.closest("[data-news]"); if (!a) return; e.preventDefault(); const f = a.nextElementSibling; f.hidden = !f.hidden; if (!f.hidden) f.querySelector("input").focus(); });
+document.addEventListener("submit", async e => { const f = e.target.closest(".nform"); if (!f) return; e.preventDefault();
+const email = f.querySelector("input").value.trim(), out = f.querySelector("output"), he = document.documentElement.lang === "he" || lang === "he";
+if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { out.textContent = he ? "כתובת המייל לא תקינה" : "Please check the address"; return; }
+if (SITE.subscribeUrl) {
+try { const r = await fetch(SITE.subscribeUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, lang: he ? "he" : "en", source: location.hash.slice(1) || "home" }) });
+if (!r.ok) throw 0; f.innerHTML = `<output class="ok">${he ? "תודה! נרשמת לניוזלטר." : "Thank you — you're subscribed."}</output>`; }
+catch (err) { out.textContent = he ? "משהו השתבש, נסו שוב בעוד רגע" : "Something went wrong, please try again"; }
+} else { location.href = `mailto:${SITE.emails[0]}?subject=${encodeURIComponent(he ? "הרשמה לניוזלטר" : "Newsletter sign-up")}&body=${encodeURIComponent(email)}`; }
+});
 const watchList = f => { const w = L(f, "watch") || []; return w.length ? `<div class="watch"><span class="wl2">${t("watch")}</span>${w.filter(([x]) => x).map(([x, u]) => /^https?:/.test(u || "") ? `<a class="wchip" href="${esc(u)}" target="_blank" rel="noopener">${esc(x)}<i>↗</i></a>` : `<span class="wchip">${esc(x)}</span>`).join("")}</div>` : ""; };
 function screeningsList(list, showFilm = true) {
 if (!list.length) return newsNote();
