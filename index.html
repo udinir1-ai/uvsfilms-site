@@ -1322,10 +1322,36 @@ ${keyBox()}
 const REPO = "udinir1-ai/uvsfilms-site";
 const getKey = () => { try { return localStorage.getItem("uvsKey") || ""; } catch (e) { return ""; } };
 const keyBox = () => `<details class="more keybox"><summary><span>חיבור לשמירה ${getKey() ? "· מחובר ✓" : ""}</span><span class="plus">+</span></summary>
-<div class="kb">${getKey() ? `<span class="ok">הדפדפן הזה מחובר לאתר.</span><button type="button" class="btn" data-key-off>ניתוק</button>`
+<div class="kb">${getKey() ? `<span class="ok">הדפדפן הזה מחובר לאתר.</span><button type="button" class="btn" data-key-off>ניתוק</button><button type="button" class="btn solid" data-move-img>העתקת התמונות מוויקס</button>`
 : `<input type="password" id="ghkey" class="ltr" placeholder="מדביקים כאן את המפתח" autocomplete="off" aria-label="מפתח"><button type="button" class="btn" data-key-on>חיבור</button>`}<span class="kmsg" id="kmsg"></span></div></details>`;
+const imgName = id => id.replace(/~mv2.*?\./, ".");
+const LOGO_SRC = "https://static.wixstatic.com/media/f84179_c4ca8185c038434780835a97bb100ef2~mv2.png/v1/crop/x_311,y_366,w_1316,h_300/fill/w_710,h_162,al_c,q_90/logo_white.png";
+async function moveImages(msg) {
+const k = getKey(), api = (p, o = {}) => fetch(`https://api.github.com/repos/${REPO}/${p}`, { ...o, headers: { Authorization: "Bearer " + k, Accept: "application/vnd.github+json", ...(o.body ? { "Content-Type": "application/json" } : {}) } }).then(async r => { if (!r.ok) throw new Error(p + " " + r.status); return r.json(); });
+const ids = [...new Set(JSON.stringify([SITE_MEDIA, MEDIA, FILMS, HE, SITE]).match(/[0-9a-f]{6}_[0-9a-f]{32}~mv2(?:_d_[0-9_s]+)?\.(?:png|jpe?g|gif|webp)/g) || [])];
+const jobs = [["img/logo_white.png", LOGO_SRC]];
+ids.forEach(id => [["full", 2000], ["s", 640]].forEach(([d, w]) => jobs.push([`img/${d}/${imgName(id)}`, `${IMG_BASE}${id}/v1/fit/w_${w},h_${w},q_85/${imgName(id)}`])));
+msg.textContent = "בודק מה כבר קיים…";
+const ref = await api("git/ref/heads/main"), head = await api(`git/commits/${ref.object.sha}`);
+const have = new Set(((await api(`git/trees/${head.tree.sha}?recursive=1`)).tree || []).map(x => x.path));
+const todo = jobs.filter(([p]) => !have.has(p));
+if (!todo.length) { msg.textContent = `כל ${jobs.length} התמונות כבר באתר ✓`; return; }
+const tree = [], fails = []; let done = 0;
+const b64 = blob => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(",")[1]); fr.onerror = no; fr.readAsDataURL(blob); });
+const one = async ([path, url]) => { for (let a = 0; a < 3; a++) { try { const r = await fetch(url); if (!r.ok) throw 0; const blob = await r.blob();
+const b = await api("git/blobs", { method: "POST", body: JSON.stringify({ content: await b64(blob), encoding: "base64" }) }); tree.push({ path, mode: "100644", type: "blob", sha: b.sha }); return; } catch (x) { await new Promise(z => setTimeout(z, 800)); } } fails.push(path); };
+const q = [...todo]; await Promise.all([0, 1, 2, 3].map(async () => { while (q.length) { await one(q.shift()); done++; msg.textContent = `מעתיק… ${done}/${todo.length}`; } }));
+if (!tree.length) { msg.textContent = "לא הצלחתי להעתיק. נסו שוב."; return; }
+msg.textContent = "שומר באתר…";
+const t = await api("git/trees", { method: "POST", body: JSON.stringify({ base_tree: head.tree.sha, tree }) });
+const c = await api("git/commits", { method: "POST", body: JSON.stringify({ message: `Copy ${tree.length} images from Wix into img/`, tree: t.sha, parents: [ref.object.sha] }) });
+await api("git/refs/heads/main", { method: "PATCH", body: JSON.stringify({ sha: c.sha }) });
+msg.textContent = fails.length ? `הועתקו ${tree.length}. לא הצליחו ${fails.length} – לחצו שוב כדי לנסות אותן.` : `הועתקו ${tree.length} תמונות ✓`;
+window.MOVED = { copied: tree.length, fails, commit: c.sha };
+}
 function bindKey(root) {
 root.addEventListener("click", async e => {
+const mv = e.target.closest("[data-move-img]"); if (mv) { mv.disabled = true; const msg = $("#kmsg"); try { await moveImages(msg); } catch (x) { msg.textContent = "משהו נכשל (" + x.message + "). נסו שוב."; } mv.disabled = false; return; }
 if (e.target.closest("[data-key-off]")) { try { localStorage.removeItem("uvsKey"); } catch (x) {} render(); return; }
 if (!e.target.closest("[data-key-on]")) return;
 const k = ($("#ghkey").value || "").trim(), msg = $("#kmsg"); if (!k) return; msg.textContent = "בודק…";
