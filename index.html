@@ -120,6 +120,12 @@ dl.credits{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:7px 
 dl.credits dt{color:var(--muted);font:500 12px/1.9 var(--mono);letter-spacing:.04em}
 dl.credits dt:dir(rtl){font:400 13.5px/1.6 var(--he);letter-spacing:0}
 dl.credits dd{margin:0}
+dl.credits .ch{grid-column:1/-1;margin:26px 0 6px}
+dl.credits .ch:first-child{margin-top:0}
+dl.credits .ch.side{grid-column:1;margin:26px 0 0;align-self:start;line-height:1.5}
+dl.credits .ch.side:first-child{margin-top:0}
+dl.credits .ch.side + dd{margin-top:26px;display:grid;gap:7px}
+dl.credits .ch.side:first-child + dd{margin-top:0}
 ul.plain{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font:500 12px/1 var(--mono);padding:8px 10px;border:1px solid var(--line);color:#c9c8c3;letter-spacing:.03em;direction:ltr}
@@ -264,6 +270,8 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .mk img{position:absolute;max-width:none;filter:brightness(0) invert(1)}
 .laurels .mk img{opacity:.85}
 .logos .mk img{opacity:.6;transition:opacity .2s}
+.mk img.proc{filter:none}
+.logos .mk img.proc{opacity:.72}
 .logos .mk:hover img{opacity:1}
 .trailer-box{position:relative;aspect-ratio:16/9;max-width:100%;background:#000;overflow:hidden}
 .trailer-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
@@ -713,7 +721,34 @@ root.querySelectorAll(".quotes").forEach(ul => { const n = ul.children.length, W
 const maxC = Math.max(1, Math.min(6, Math.floor((W + 28) / 178))), rows = Math.ceil(n / maxC), c = Math.ceil(n / rows);
 ul.style.setProperty("--qc", c); ul.style.setProperty("--qf", W < 600 ? "18px" : c >= 6 ? "15px" : c === 5 ? "16.5px" : "19px"); });
 }
+/* logos/laurels: a flat one-colour logo stays a white silhouette (CSS). A logo with inner detail (text in another colour, its own
+background) is redrawn once on a canvas: its main colour becomes solid white, other colours become softer white, a solid
+background becomes transparent — so the logo stays readable instead of turning into a blank shape. */
+const TONE = {};
+function toneMarks(root = document) {
+root.querySelectorAll(".mk img:not([data-tone])").forEach(im => {
+const id = im.closest(".mk").dataset.id; im.dataset.tone = "…";
+const apply = v => { im.dataset.tone = v ? "proc" : "sil"; if (v) { im.src = v; im.classList.add("proc"); } };
+if (id in TONE) return apply(TONE[id]);
+const p = new Image(); p.crossOrigin = "anonymous";
+p.onload = () => { try {
+const c = document.createElement("canvas"), W = c.width = p.naturalWidth, H = c.height = p.naturalHeight, x = c.getContext("2d"); x.drawImage(p, 0, 0);
+const g = x.getImageData(0, 0, W, H), d = g.data; let tr = 0; const bins = {};
+for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 128) { tr++; continue; } const k = (d[i] >> 5) * 64 + (d[i + 1] >> 5) * 8 + (d[i + 2] >> 5); const o = bins[k] = bins[k] || [0, 0, 0, 0]; o[0]++; o[1] += d[i]; o[2] += d[i + 1]; o[3] += d[i + 2]; }
+const opaque = tr < d.length / 4 * .03, top = Object.values(bins).sort((a, b) => b[0] - a[0])[0] || [1, 255, 255, 255], D = [top[1] / top[0], top[2] / top[0], top[3] / top[0]];
+const dist = i => Math.hypot(d[i] - D[0], d[i + 1] - D[1], d[i + 2] - D[2]);
+let far = 0, solid = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] >= 128) { solid++; if (dist(i) > 70) far++; }
+if (!opaque && far / Math.max(1, solid) < .04) { TONE[id] = ""; return apply(""); }
+for (let i = 0; i < d.length; i += 4) { const k = Math.min(1, Math.max(0, (dist(i) - 35) / 70));
+d[i + 3] = opaque ? Math.round(255 * k) : Math.round(d[i + 3] * (1 - .55 * k)); d[i] = d[i + 1] = d[i + 2] = 255; }
+x.putImageData(g, 0, 0); TONE[id] = c.toDataURL(); apply(TONE[id]);
+} catch (e) { TONE[id] = ""; apply(""); } };
+p.onerror = () => { TONE[id] = ""; apply(""); };
+p.src = img(id, 600);
+});
+}
 function layoutMarks(root = document) {
+toneMarks(root);
 root.querySelectorAll(".marks").forEach(box => {
 const logo = box.dataset.kind === "logo";
 const A = logo ? 3000 : 8200, maxH = logo ? 46 : 92, maxW = logo ? 170 : 220;
@@ -731,7 +766,8 @@ const W = box.clientWidth;
 if (logo) {
 const gap = W < 600 ? 14 : 28, sum = items.reduce((a, x) => a + x.w, 0);
 const sc = Math.min(1, (W - gap * (items.length - 1)) / sum);
-box.style.gap = gap + "px";
+const few = items.length < 2 || (W - sum) / (items.length - 1) > 84;
+box.style.gap = (few ? 56 : gap) + "px"; box.style.justifyContent = few ? "flex-start" : "";
 items.forEach(x => { x.w *= sc; x.h *= sc; });
 } else if (W) {
 let W = box.clientWidth; const gap = W < 600 ? 14 : 28, minSc = W < 600 ? .5 : .78, narrow = W < 600, side = 52;
@@ -895,9 +931,11 @@ const blocks = [];
 if (syn) blocks.push(`<p class="syn">${esc(syn)}</p>`);
 if (f.status === "released") blocks.push(`<div id="screenings"><h3>${t("screenings")}</h3>${mine.length ? screeningsList(mine, false) : `<div class="screen-empty">${t("fromCV")}</div>`}</div>`);
 const side = [];
-if (team.length) side.push(`<div><h3>${t("team")}</h3><dl class="credits">${team.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}</dl></div>`);
-if (tech.length) side.push(`<div><h3>${t("tech")}</h3><dl class="credits">${tech.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}</dl></div>`);
-if (pitching.length) side.push(`<div><h3>${esc(pTitle)}</h3><ul class="plain">${pitching.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`);
+const cred = [];
+if (team.length) cred.push(`<h3 class="ch">${t("team")}</h3>${team.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}`);
+if (tech.length) cred.push(`<h3 class="ch">${t("tech")}</h3>${tech.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}`);
+if (pitching.length) cred.push(`<h3 class="ch side">${esc(pTitle)}</h3><dd class="pl">${pitching.map(p => `<span>${esc(p)}</span>`).join("")}</dd>`);
+if (cred.length) side.push(`<dl class="credits">${cred.join("")}</dl>`);
 if (links.length) side.push(`<div><h3>${t("links")}</h3><ul class="plain">${links.map(([x, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(x)} ↗</a></li>`).join("")}</ul></div>`);
 const mark = (id, alt, hide) => `<span class="mk" data-id="${id}"${hide ? ` data-hide="1"` : ""}><img src="${img(id, 600)}" alt="${esc(alt || "")}" loading="lazy"></span>`;
 const hid = media.laurelsHidden || [];
