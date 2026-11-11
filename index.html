@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>uvs films</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--seo--><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com https://static.wixstatic.com https://cine-verse.ai.studio; frame-src 'self' https://player.vimeo.com https://www.youtube.com; base-uri 'self'; object-src 'none'; form-action 'self'"><title>uvs films – Sagi Bornstein &amp; Udi Nir | Documentary films</title><meta name="description" content="uvs films is a documentary film production company, run by filmmaker duo Udi Nir and Sagi Bornstein."><link rel="canonical" href="https://uvsfilms.com/"><link rel="alternate" hreflang="en" href="https://uvsfilms.com/"><link rel="alternate" hreflang="he" href="https://uvsfilms.com/he/"><link rel="alternate" hreflang="x-default" href="https://uvsfilms.com/"><meta property="og:type" content="website"><meta property="og:site_name" content="uvs films"><meta property="og:title" content="uvs films – Sagi Bornstein &amp; Udi Nir | Documentary films"><meta property="og:description" content="uvs films is a documentary film production company, run by filmmaker duo Udi Nir and Sagi Bornstein."><meta property="og:url" content="https://uvsfilms.com/"><meta property="og:image" content="https://uvsfilms.com/img/full/f84179_29e94c7a2059494999aa193fcbacdba2.jpg"><meta property="og:locale" content="en_US"><meta name="twitter:card" content="summary_large_image"><script type="application/ld+json">[{"@context":"https://schema.org","@type":"Organization","name":"uvs films","alternateName":["אודי ושגיא הפקות בע\"מ"],"url":"https://uvsfilms.com/","logo":"https://uvsfilms.com/img/logo_white.png","description":"uvs films is a documentary film production company, run by filmmaker duo Udi Nir and Sagi Bornstein.","email":"udi@uvsfilms.com","founder":[{"@type":"Person","name":"Sagi Bornstein"},{"@type":"Person","name":"Udi Nir"}],"sameAs":["https://www.facebook.com/uvsfilms","https://vimeo.com/user58129213","https://www.youtube.com/channel/UCcfM38aSbS1r1ZK1tTEQ8AA","https://www.instagram.com/uvsfilms/"]}]</script><!--/seo-->
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700;800&display=swap">
@@ -413,10 +413,10 @@ header.site.open nav.main a:last-child{border-bottom:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <header class="site"><div class="wrap">
-<a class="logo" id="logo" href="#home"><img src="/img/logo_white.png" alt="uvs films" width="140" height="32"></a>
-<div class="navs"><nav class="main" id="nav"></nav><a class="lang" id="lang" href="#he-home">עברית</a><button class="menu-btn" id="menuBtn" type="button" aria-label="menu" aria-expanded="false"><span></span><span></span></button></div>
+<a class="logo" id="logo" href="/"><img src="/img/logo_white.png" alt="uvs films" width="140" height="32"></a>
+<div class="navs"><nav class="main" id="nav"></nav><a class="lang" id="lang" href="/he/">עברית</a><button class="menu-btn" id="menuBtn" type="button" aria-label="menu" aria-expanded="false"><span></span><span></span></button></div>
 </div></header>
-<main id="app"></main>
+<main id="app"><!--seobody--><div id="seo"><h1>uvs films</h1><p>uvs films is a documentary film production company, run by filmmaker duo Udi Nir and Sagi Bornstein.</p><nav><ul><li><a href="/">Home</a></li><li><a href="/films/">Films</a></li><li><a href="/in-production/">In Production</a></li><li><a href="/bio/">Bio &amp; Contact</a></li><li><a href="/he/">עברית</a></li></ul><ul><li><a href="/films/buryadove/">Bury a Dove (2028)</a></li><li><a href="/films/it-is-what-it-is/">It Is What It Is (2027)</a></li><li><a href="/films/tfl/">The First Lady (2025)</a></li><li><a href="/films/we-must-talk-now/">We Must Talk Now (2024)</a></li><li><a href="/films/viraldreams/">Viral Dreams (2021)</a></li><li><a href="/films/ournaturalright/">Our Natural Right (2020)</a></li><li><a href="/films/golda/">Golda (2019)</a></li><li><a href="/films/uploading-holocaust/">#uploading_holocaust (2016)</a></li><li><a href="/films/kafka-s-last-story/">Kafka's Last Story (2011)</a></li></ul></nav></div><!--/seobody--></main>
 <footer class="site" id="foot"></footer>
 <a class="edit-fab" id="fab" href="#edit">עריכת עמוד</a>
 <script>// UVS site content — copied from uvsfilms.com (Wix), 10.11.2026
@@ -778,17 +778,21 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const bySlug = s => FILMS.find(f => f.slug === s);
 let lang = "en";
-const R = name => "#" + (lang === "he" ? "he-" : "") + name;
+const routePath = (name, lg = lang) => (lg === "he" ? "/he" : "") + (name === "home" ? "/" : name.startsWith("f-") ? `/films/${name.slice(2)}/` : `/${name}/`);
+const R = name => routePath(name);
+const pathRoute = p => { const he = /^\/he(\/|$)/.test(p); p = p.replace(/^\/he/, "").replace(/index\.html$/, "");
+const m = p.match(/^\/films\/([\w-]+)\/?$/); const name = m ? "f-" + m[1] : p.replace(/^\/|\/$/g, "") || "home";
+return (he ? "he-" : "") + (["home", "films", "in-production", "bio"].includes(name) || name.startsWith("f-") ? name : "home"); };
 const T = {
 en: { home:"Home", films:"Films", prod:"In Production", bio:"Bio & Contact", switchTo:"עברית",
 newFilm:"New film", inProd:"In production", doc:"Documentary", about:"About the film", projects:"Our projects",
-screenings:"Upcoming screenings", allFilms:"All films", qa:"Q&A", example:"EXAMPLE", noScreen:"No screenings scheduled right now.", news:"Sign up for our newsletter to get updates on screenings and Q&As", watch:"Where to watch",
+screenings:"Upcoming screenings", allFilms:"All films", qa:"Q&A", tickets:"Tickets", example:"EXAMPLE", noScreen:"No screenings scheduled right now.", news:"Sign up for our newsletter to get updates on screenings and Q&As", watch:"Where to watch",
 fromCV:"Screening dates appear here automatically from CineVerse.", festivals:"Festivals & awards", supported:"Supported by",
 team:"Team", tech:"Technical details", pitching:"Pitching events", links:"Links", trailer:"▶ Watch trailer", contact:"Contact",
 prev:"Previous", next:"Next", months:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] },
 he: { home:"בית", films:"סרטים", prod:"בהפקה", bio:"אודות", switchTo:"English",
 newFilm:"סרט חדש", inProd:"בהפקה", doc:"סרט תיעודי", about:"על הסרט", projects:"הפרויקטים שלנו",
-screenings:"הקרנות קרובות", allFilms:"כל הסרטים", qa:"מפגש עם היוצרים", example:"דוגמה", noScreen:"אין הקרנות מתוכננות כרגע.", news:"הירשמו לניוזלטר שלנו לקבלת התראות על הקרנות ומפגשים", watch:"זמין לצפייה",
+screenings:"הקרנות קרובות", allFilms:"כל הסרטים", qa:"מפגש עם היוצרים", tickets:"כרטיסים", example:"דוגמה", noScreen:"אין הקרנות מתוכננות כרגע.", news:"הירשמו לניוזלטר שלנו לקבלת התראות על הקרנות ומפגשים", watch:"זמין לצפייה",
 fromCV:"מועדי ההקרנות יופיעו כאן אוטומטית מסינברס.", festivals:"פסטיבלים ופרסים", supported:"בתמיכת",
 team:"צוות", tech:"פרטים טכניים", pitching:"אירועי פיצ'ינג", links:"קישורים", trailer:"▶ לצפייה בטריילר", contact:"יצירת קשר",
 prev:"הקודם", next:"הבא", months:["ינו׳","פבר׳","מרץ","אפר׳","מאי","יוני","יולי","אוג׳","ספט׳","אוק׳","נוב׳","דצמ׳"] }
@@ -1044,22 +1048,34 @@ document.addEventListener("submit", async e => { const f = e.target.closest(".nf
 const email = f.querySelector("input").value.trim(), out = f.querySelector("output"), he = document.documentElement.lang === "he" || lang === "he";
 if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { out.textContent = he ? "כתובת המייל לא תקינה" : "Please check the address"; return; }
 if (SITE.subscribeUrl) {
-try { const r = await fetch(SITE.subscribeUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, lang: he ? "he" : "en", source: location.hash.slice(1) || "home" }) });
+try { const r = await fetch(SITE.subscribeUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, lang: he ? "he" : "en", source: location.pathname }) });
 if (!r.ok) throw 0; f.innerHTML = `<output class="ok">${he ? "תודה! נרשמת לניוזלטר." : "Thank you — you're subscribed."}</output>`; }
 catch (err) { out.textContent = he ? "משהו השתבש, נסו שוב בעוד רגע" : "Something went wrong, please try again"; }
 } else { location.href = `mailto:${SITE.emails[0]}?subject=${encodeURIComponent(he ? "הרשמה לניוזלטר" : "Newsletter sign-up")}&body=${encodeURIComponent(email)}`; }
 });
 const watchList = f => { const w = L(f, "watch") || []; return w.length ? `<div class="watch"><span class="wl2">${t("watch")}</span>${w.filter(([x]) => x).map(([x, u]) => /^https?:/.test(u || "") ? `<a class="wchip" href="${esc(u)}" target="_blank" rel="noopener">${esc(x)}<i>↗</i></a>` : `<span class="wchip">${esc(x)}</span>`).join("")}</div>` : ""; };
+const FEED_URL = "https://cine-verse.ai.studio/api/public/site-feed";
+async function loadFeed() {
+try {
+const r = await fetch(FEED_URL, { cache: "no-store" }); if (!r.ok) return; const j = await r.json();
+const norm = x => String(x || "").replace(/_/g, "-"), ok = sl => FILMS.some(f => f.slug === sl);
+SCREENINGS = (j.screenings || []).map(s => ({ ...s, slug: norm(s.slug) })).filter(s => ok(s.slug) && /^\d{4}-\d{2}-\d{2}$/.test(s.date || ""));
+FILMS.forEach(f => { f.watch = []; if (HE[f.slug]) HE[f.slug].watch = []; });
+for (const [k, list] of Object.entries(j.watch || {})) { const f = bySlug(norm(k)); if (f) f.watch = list; }
+for (const [k, list] of Object.entries(j.watchHe || {})) { const sl = norm(k); if (ok(sl)) (HE[sl] = HE[sl] || {}).watch = list; }
+if (!/^#?(he-)?edit/.test(location.hash)) { const y = scrollY; render(); scrollTo(0, y); }
+} catch (e) {}
+}
 function screeningsList(list, showFilm = true) {
 if (!list.length) return newsNote();
-const i = lang === "he" ? 1 : 0;
+const i = lang === "he" ? 1 : 0, pick = a => (a && (a[i] || a[0])) || "";
 return `<ul class="screens">${list.map(s => {
 const f = bySlug(s.slug), d = new Date(s.date + "T00:00:00");
 return `<li class="scr">
 <div class="date"><b>${d.getDate()}</b><span>${t("months")[d.getMonth()]} ${d.getFullYear()}</span></div>
-${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>` : `<span class="t">${esc(s.venue[i])}</span>`}
-<div class="where">${showFilm ? esc(s.venue[i]) + "<br>" : ""}${esc(s.city[i])}<small>${esc(s.time)}</small></div>
-<div class="badges">${s.qa ? `<span class="badge qa">${t("qa")}</span>` : ""}${s.example ? `<span class="badge ex">${t("example")}</span>` : ""}</div>
+${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>` : `<span class="t">${esc(pick(s.venue))}</span>`}
+<div class="where">${showFilm ? esc(pick(s.venue)) + "<br>" : ""}${esc(pick(s.city))}<small>${esc(s.time || "")}</small></div>
+<div class="badges">${s.qa ? `<span class="badge qa">${t("qa")}</span>` : ""}${/^https?:/.test(s.link || "") ? `<a class="badge qa" href="${esc(s.link)}" target="_blank" rel="noopener">${t("tickets")} ↗</a>` : ""}</div>
 </li>`; }).join("")}</ul>`;
 }
 const upcoming = () => SCREENINGS.filter(s => new Date(s.date + "T23:59:59") >= new Date()).sort((a, b) => a.date.localeCompare(b.date));
@@ -1254,7 +1270,7 @@ return `<div class="ed">
 <aside class="ed-form">
 <div class="edtabs"><a class="on" href="#edit">עמוד סרט</a><a href="#edit-home">עמוד הבית</a></div>
 ${saveBar()}
-<div class="ed-top"><h2>עריכת עמוד סרט</h2><a class="btn" href="${he ? "#he-" : "#"}f-${f.slug}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+<div class="ed-top"><h2>עריכת עמוד סרט</h2><a class="btn" href="${routePath("f-" + f.slug, he ? "he" : "en")}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
 <div class="f"><label for="pick">סרט</label><select id="pick">${opts}</select></div>
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${he ? "on" : ""}">עברית</button><button data-lg="en" class="${he ? "" : "on"}">English</button></div>
 <div class="seg" role="group" aria-label="מצב"><button data-st="released" class="${f.status === "released" ? "on" : ""}">יצא</button><button data-st="production" class="${f.status === "production" ? "on" : ""}">בהפקה</button></div>
@@ -1308,6 +1324,82 @@ document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { src(f, 
 document.querySelectorAll("[data-ord]").forEach(b => b.onclick = () => { const k = b.dataset.ord, l = src(f, k, b.dataset.p === "1")[k], i = +b.dataset.i, j = i + +b.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; reopen(k); });
 bindImgLists(f, reopen);
 }
+const ORIGIN = "https://uvsfilms.com";
+const absImg = id => id ? (/^https?:/.test(id) ? id : ORIGIN + img(id, 2000)) : ORIGIN + "/img/logo_white.png";
+const withLang = (lg, fn) => { const keep = lang; lang = lg; try { return fn(); } finally { lang = keep; } };
+const clip = (s, n = 158) => { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : s; };
+const directorsOf = f => (L(f, "team") || []).filter(([r]) => /direct|במאי|בימוי/i.test(r)).flatMap(([, n]) => String(n).split(/,|&| ו(?=\S)/)).map(x => x.trim()).filter(Boolean);
+const people = () => (lang === "he" ? SITE_HE.people : SITE.people).map(p => p.name);
+function seoInfo(h, lg) {
+return withLang(lg, () => {
+const he = lg === "he", co = he ? (SITE_HE.company || "uvs films") : "uvs films";
+const tag = (he ? SITE_HE.tagline : SITE.tagline) || `${co} · ${people().join(", ")} · ${ordered().map(f => L(f, "title")).join(", ")}`;
+const nav = [["home", t("home")], ["films", t("films")], ["in-production", t("prod")], ["bio", t("bio")]];
+const filmLinks = ordered().map(f => `<li><a href="${routePath("f-" + f.slug, lg)}">${esc(L(f, "title"))} (${esc(f.year)})</a></li>`).join("");
+const org = { "@context": "https://schema.org", "@type": "Organization", name: "uvs films", alternateName: [SITE_HE.company].filter(Boolean), url: ORIGIN + "/", logo: ORIGIN + "/img/logo_white.png",
+description: SITE.tagline, email: SITE.emails[0], founder: SITE.people.map(p => ({ "@type": "Person", name: p.name })), sameAs: SITE.social.map(x => x[1]) };
+let title, desc, image = "", body, ld = [org];
+if (h.startsWith("f-") && bySlug(h.slice(2))) {
+const f = bySlug(h.slice(2)), dirs = directorsOf(f), other = withLang(he ? "en" : "he", () => L(f, "title"));
+title = `${L(f, "title")} (${f.year}) | uvs films`;
+desc = clip(L(f, "logline") || L(f, "synopsis"));
+image = absImg(ML(f, "poster", lg) || key(f));
+ld.push({ "@context": "https://schema.org", "@type": "Movie", name: L(f, "title"), alternateName: other !== L(f, "title") ? other : undefined, dateCreated: String(f.year), image,
+description: clip(L(f, "synopsis") || L(f, "logline"), 600), director: dirs.map(n => ({ "@type": "Person", name: n })), productionCompany: { "@type": "Organization", name: "uvs films", url: ORIGIN + "/" },
+genre: "Documentary", url: ORIGIN + routePath(h, lg), inLanguage: undefined });
+body = `<h1>${esc(L(f, "title"))}</h1><p>${esc(f.year)}${f.runtime ? " · " + esc(lg === "he" ? ((L(f, "tech") || []).find(x => x[0] === "משך") || [])[1] || f.runtime : f.runtime) : ""}${dirs.length ? " · " + esc(dirs.join(", ")) : ""}</p>
+<p>${esc(L(f, "logline"))}</p><p>${esc(L(f, "synopsis"))}</p>
+${(L(f, "team") || []).length ? `<ul>${L(f, "team").map(([r, n]) => `<li>${esc(r)}: ${esc(n)}</li>`).join("")}</ul>` : ""}
+${(L(f, "awards") || []).length ? `<ul>${L(f, "awards").map(a => `<li>${esc(Array.isArray(a) ? a.join(" – ") : a)}</li>`).join("")}</ul>` : ""}`;
+} else if (h === "films" || h === "in-production") {
+const list = ordered().filter(f => f.status === (h === "films" ? "released" : "production"));
+title = `${h === "films" ? t("films") : t("prod")} | uvs films`;
+desc = clip(`${co}: ${list.map(f => L(f, "title")).join(", ")}`);
+body = `<h1>${esc(h === "films" ? t("films") : t("prod"))}</h1><ul>${list.map(f => `<li><a href="${routePath("f-" + f.slug, lg)}">${esc(L(f, "title"))}</a> (${esc(f.year)}) – ${esc(clip(L(f, "logline"), 200))}</li>`).join("")}</ul>`;
+} else if (h === "bio") {
+title = `${t("bio")} | uvs films`;
+desc = clip(tag);
+body = `<h1>${esc(t("bio"))}</h1>${(he ? SITE_HE.people : SITE.people).map(p => `<h2>${esc(p.name)}</h2><p>${esc(p.bio)}</p>`).join("")}<p>${SITE.emails.map(esc).join(" · ")}</p>`;
+} else {
+h = "home";
+title = `uvs films – ${people().join(he ? " ו" : " & ")}${he ? "" : " | Documentary films"}`;
+desc = clip(tag);
+body = `<h1>${esc(co)}</h1><p>${esc(tag)}</p>`;
+}
+const path = routePath(h, lg);
+return { title, desc, path, image: image || absImg(key(bySlug((SITE.slideOrder || [])[0]) || FILMS[0])), ld,
+body: `${body}<nav><ul>${nav.map(([r, n]) => `<li><a href="${routePath(r, lg)}">${esc(n)}</a></li>`).join("")}<li><a href="${routePath(h, he ? "en" : "he")}">${he ? "English" : "עברית"}</a></li></ul><ul>${filmLinks}</ul></nav>` };
+});
+}
+const seoHead = (h, lg) => { const i = seoInfo(h, lg), name = h.replace(/^he-/, "");
+return `<title>${esc(i.title)}</title><meta name="description" content="${esc(i.desc)}"><link rel="canonical" href="${ORIGIN + i.path}">
+<link rel="alternate" hreflang="en" href="${ORIGIN + routePath(name, "en")}"><link rel="alternate" hreflang="he" href="${ORIGIN + routePath(name, "he")}"><link rel="alternate" hreflang="x-default" href="${ORIGIN + routePath(name, "en")}">
+<meta property="og:type" content="${name.startsWith("f-") ? "video.movie" : "website"}"><meta property="og:site_name" content="uvs films"><meta property="og:title" content="${esc(i.title)}"><meta property="og:description" content="${esc(i.desc)}"><meta property="og:url" content="${ORIGIN + i.path}"><meta property="og:image" content="${esc(i.image)}"><meta property="og:locale" content="${lg === "he" ? "he_IL" : "en_US"}"><meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">${JSON.stringify(i.ld).replace(/</g, "\\u003c")}<\/script>`; };
+function setHead(h) {
+const name = h.replace(/^he-/, ""), i = seoInfo(name, lang);
+document.title = i.title;
+const meta = (sel, make) => document.head.querySelector(sel) || document.head.appendChild(make());
+meta('meta[name="description"]', () => Object.assign(document.createElement("meta"), { name: "description" })).content = i.desc;
+meta('link[rel="canonical"]', () => Object.assign(document.createElement("link"), { rel: "canonical" })).href = ORIGIN + i.path;
+}
+const ALL_ROUTES = () => ["home", "films", "in-production", "bio", ...FILMS.map(f => "f-" + f.slug)];
+function genPages() {
+const out = {}, today = new Date().toISOString().slice(0, 10), urls = [];
+for (const lg of ["en", "he"]) for (const name of ALL_ROUTES()) {
+const i = seoInfo(name, lg); urls.push(ORIGIN + i.path);
+if (lg === "en" && name === "home") continue; /* the home page is index.html itself */
+out[i.path.replace(/^\//, "") + "index.html"] = `<!doctype html><html lang="${lg}" dir="${lg === "he" ? "rtl" : "ltr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+${seoHead(name, lg)}
+<style>body{margin:0;background:#111214;color:#5b5e66;font:15px/1.6 system-ui,sans-serif}#seo{max-width:70ch;margin:48px auto;padding:0 16px}#seo a{color:#8a8d95}</style></head>
+<body><div id="seo">${i.body}</div>
+<script>fetch("/index.html",{cache:"no-cache"}).then(function(r){return r.text()}).then(function(h){document.open();document.write(h);document.close()});<\/script></body></html>
+`;
+}
+out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `<url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+out["robots.txt"] = `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`;
+return out;
+}
 function pageEditHome() {
 const off = k => (SITE.hide || {})[k] || [];
 const rows = (list, kind) => list.map(f => `<li class="srt${off(kind).includes(f.slug) ? " off" : ""}" draggable="true" data-slug="${f.slug}" data-list="${kind}"><span class="grip" aria-hidden="true">⋮⋮</span><img src="${img((kind === "poster" || kind === "films") && ML(f, "poster", edLang) ? ML(f, "poster", edLang) : key(f), 160)}" alt=""><span class="nm">${esc(L(f, "title"))}</span><button class="eye" data-eye title="${off(kind).includes(f.slug) ? "להציג" : "להסתיר"}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button><button class="mv" data-mv="-1" title="למעלה">↑</button><button class="mv" data-mv="1" title="למטה">↓</button></li>`).join("");
@@ -1317,7 +1409,7 @@ return `<div class="ed">
 <aside class="ed-form">
 <div class="edtabs"><a href="#edit">עמוד סרט</a><a class="on" href="#edit-home">עמוד הבית</a></div>
 ${saveBar()}
-<div class="ed-top"><h2>עמוד הבית</h2><a class="btn" href="#home" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+<div class="ed-top"><h2>עמוד הבית</h2><a class="btn" href="/" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${edLang === "he" ? "on" : ""}">עברית</button><button data-lg="en" class="${edLang === "he" ? "" : "on"}">English</button></div>
 ${block("slide", "עמוד הבית · הגלריה המתחלפת")}
 ${block("poster", "עמוד הבית · שורת הפוסטרים")}
@@ -1345,9 +1437,13 @@ const isDirty = () => dataNow() !== savedSnap;
 const b64utf8 = str => { const b = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
 async function saveAll() {
 const body = dataNow(), when = new Date().toISOString();
-let sha; try { sha = (await ghApi("contents/data/site.js?ref=main")).sha; } catch (e) { if (!/ 404$/.test(e.message)) throw e; }
 const full = `${body.slice(0, -1)},"savedAt":"${when}"}`;
-await ghApi("contents/data/site.js", { method: "PUT", body: JSON.stringify({ message: `Editor save ${when}`, content: b64utf8(`window.SAVED = ${full};\n`), ...(sha ? { sha } : {}), branch: "main" }) });
+const files = { "data/site.js": `window.SAVED = ${full};\n`, ...genPages() };
+const tree = Object.entries(files).map(([path, content]) => ({ path, mode: "100644", type: "blob", content }));
+const ref = await ghApi("git/ref/heads/main"), head = await ghApi(`git/commits/${ref.object.sha}`);
+const tr = await ghApi("git/trees", { method: "POST", body: JSON.stringify({ base_tree: head.tree.sha, tree }) });
+const c = await ghApi("git/commits", { method: "POST", body: JSON.stringify({ message: `Editor save ${when}`, tree: tr.sha, parents: [ref.object.sha] }) });
+await ghApi("git/refs/heads/main", { method: "PATCH", body: JSON.stringify({ sha: c.sha }) });
 try { localStorage.setItem("uvsPending", full); } catch (e) {}
 savedSnap = body;
 }
@@ -1451,7 +1547,9 @@ if (b.dataset.mv === "1" && li.nextElementSibling) ul.insertBefore(li.nextElemen
 let EDITOR = (() => { let on = false; try { if (/^#(he-)?edit/.test(location.hash) || /[?&]edit\b/.test(location.search)) localStorage.setItem("uvsEditor", "1"); on = localStorage.getItem("uvsEditor") === "1"; } catch (e) { on = /^#(he-)?edit/.test(location.hash); } return on; })();
 function render() {
 clearInterval(timer); cancelAnimationFrame(gtimer);
-let h = (location.hash || "#home").slice(1);
+let h = location.hash.slice(1);
+if (h && !/^(he-)?edit/.test(h)) { const lg0 = h.startsWith("he-") ? "he" : "en"; history.replaceState(null, "", routePath(h.replace(/^he-/, ""), lg0)); h = ""; }
+if (!h) h = pathRoute(location.pathname);
 lang = h.startsWith("he-") ? "he" : "en";
 if (lang === "he") h = h.slice(3);
 if (h === "edit" || h === "edit-home") lang = "he";
@@ -1471,15 +1569,16 @@ if (f) { edSlug = f.slug; edLang = lang; navKey = f.status === "production" ? "i
 $("#nav").innerHTML = [["home", "home"], ["films", "films"], ["in-production", "prod"], ["bio", "bio"]]
 .map(([r, k]) => `<a href="${R(r)}" class="${r === navKey ? "on" : ""}">${t(k)}</a>`).join("");
 $("#logo").href = R("home");
-const other = lang === "he" ? "#" + h : "#he-" + h;
+const other = routePath(h, lang === "he" ? "en" : "he");
 const isEd = h === "edit" || h === "edit-home";
-$("#lang").href = isEd ? "#home" : other;
+$("#lang").href = isEd ? "/" : other;
 $("#lang").textContent = isEd ? "לאתר" : t("switchTo");
 $("#fab").classList.remove("ask");
 const fp = h.startsWith("f-") && bySlug(h.slice(2));
 document.documentElement.style.cssText = fp ? tint(fp) : (h === "home" ? tint({ color: SITE.homeColor }) : "");
 document.querySelector("header.site").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded", "false");
 $("#app").innerHTML = html;
+if (!isEd) setHead(h);
 $("#foot").innerHTML = footer();
 $("#foot").hidden = isEd;
 if (isEd && !EDITOR) { EDITOR = true; try { localStorage.setItem("uvsEditor", "1"); } catch (e) {} }
@@ -1500,12 +1599,16 @@ if (PHONE) {
 document.body.className = "phonemode";
 document.body.innerHTML = `<div class="pbar"><a class="btn" id="pback" href="#">חזרה לתצוגת מחשב</a><span>תצוגת טלפון · 390×844</span></div>
 <div class="pdev"><iframe id="pframe" src="${location.pathname}${location.hash}" title="תצוגת טלפון"></iframe></div>`;
-$("#pback").onclick = e => { e.preventDefault(); location.href = location.pathname + $("#pframe").contentWindow.location.hash; };
+$("#pback").onclick = e => { e.preventDefault(); const w = $("#pframe").contentWindow.location; location.href = w.pathname + w.hash; };
 } else {
 addEventListener("hashchange", render);
+addEventListener("popstate", render);
+document.addEventListener("click", e => { const a = e.target.closest("a[href^='/']"); if (!a || a.target || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+const u = new URL(a.href); if (u.origin !== location.origin || /\.(js|xml|txt|png|jpe?g)$/i.test(u.pathname)) return;
+e.preventDefault(); history.pushState(null, "", u.pathname + u.hash); render(); });
 render();
 if (window.top === window && EDITOR) { const pb = document.createElement("a"); pb.className = "phone-fab"; pb.textContent = "תצוגת טלפון"; pb.href = "#";
-pb.onclick = e => { e.preventDefault(); location.href = "?phone" + location.hash; }; document.body.append(pb); }
+pb.onclick = e => { e.preventDefault(); location.href = location.pathname + "?phone" + location.hash; }; document.body.append(pb); }
 }
 </script>
 </html>
