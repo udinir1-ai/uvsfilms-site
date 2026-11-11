@@ -409,7 +409,7 @@ header.site.open nav.main a:last-child{border-bottom:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <header class="site"><div class="wrap">
-<a class="logo" id="logo" href="#home"><img src="https://static.wixstatic.com/media/f84179_c4ca8185c038434780835a97bb100ef2~mv2.png/v1/crop/x_311,y_366,w_1316,h_300/fill/w_355,h_81,al_c,q_85/logo_white.png" alt="uvs films" width="140" height="32"></a>
+<a class="logo" id="logo" href="#home"><img src="/img/logo_white.png" alt="uvs films" width="140" height="32"></a>
 <div class="navs"><nav class="main" id="nav"></nav><a class="lang" id="lang" href="#he-home">עברית</a><button class="menu-btn" id="menuBtn" type="button" aria-label="menu" aria-expanded="false"><span></span><span></span></button></div>
 </div></header>
 <main id="app"></main>
@@ -683,7 +683,7 @@ window.SCREENINGS = [];
 <script>// Images from the current uvsfilms.com media library (Wix). Each entry is a Wix media id.
 // Before leaving Wix these files are copied into the site's own /img folder; only IMG_BASE changes then.
 window.IMG_BASE = "https://static.wixstatic.com/media/";
-window.img = (id, w = 1600) => !id ? "" : /^https?:/.test(id) ? id : `${IMG_BASE}${id}/v1/fit/w_${w},h_${w},q_85/${id.replace(/~mv2.*?\./, ".")}`;
+window.img = (id, w = 1600) => !id ? "" : /^https?:/.test(id) ? id : `/img/${w <= 720 ? "s" : "full"}/${id.replace(/~mv2.*?\./, ".")}`;
 window.SITE_MEDIA = {
 logo: "f84179_c4ca8185c038434780835a97bb100ef2~mv2.png",
 portraits: ["f84179_66401c58801b4a3e8abda5c14b0d8519~mv2.jpg", "f84179_431a0bcab92a4fc4b527972eba2ffd41~mv2.jpg"]
