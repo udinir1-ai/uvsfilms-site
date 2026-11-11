@@ -1347,6 +1347,7 @@ if (b.dataset.mv === "-1" && li.previousElementSibling) ul.insertBefore(li, li.p
 if (b.dataset.mv === "1" && li.nextElementSibling) ul.insertBefore(li.nextElementSibling, li); save(ul); });
 });
 }
+let EDITOR = (() => { let on = false; try { if (/^#(he-)?edit/.test(location.hash) || /[?&]edit\b/.test(location.search)) localStorage.setItem("uvsEditor", "1"); on = localStorage.getItem("uvsEditor") === "1"; } catch (e) { on = /^#(he-)?edit/.test(location.hash); } return on; })();
 function render() {
 clearInterval(timer); cancelAnimationFrame(gtimer);
 let h = (location.hash || "#home").slice(1);
@@ -1380,7 +1381,8 @@ document.querySelector("header.site").classList.remove("open"); $("#menuBtn").se
 $("#app").innerHTML = html;
 $("#foot").innerHTML = footer();
 $("#foot").hidden = isEd;
-$("#fab").hidden = isEd;
+if (isEd && !EDITOR) { EDITOR = true; try { localStorage.setItem("uvsEditor", "1"); } catch (e) {} }
+$("#fab").hidden = isEd || !EDITOR;
 if (h === "edit") bindEditor();
 if (navKey === "home" && !h.startsWith("f-")) startShow();
 if (h === "edit-home") bindEditHome();
@@ -1400,7 +1402,7 @@ $("#pback").onclick = e => { e.preventDefault(); location.href = location.pathna
 } else {
 addEventListener("hashchange", render);
 render();
-if (window.top === window) { const pb = document.createElement("a"); pb.className = "phone-fab"; pb.textContent = "תצוגת טלפון"; pb.href = "#";
+if (window.top === window && EDITOR) { const pb = document.createElement("a"); pb.className = "phone-fab"; pb.textContent = "תצוגת טלפון"; pb.href = "#";
 pb.onclick = e => { e.preventDefault(); location.href = "?phone" + location.hash; }; document.body.append(pb); }
 }
 </script>
