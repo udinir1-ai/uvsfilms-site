@@ -361,6 +361,14 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .scr .where,.scr .badges{grid-column:2}.badges{justify-content:flex-start}
 .stage{aspect-ratio:auto;height:440px;min-height:0}
 }
+.phone-fab{position:fixed;bottom:18px;inset-inline-start:150px;z-index:30;height:40px;display:inline-flex;align-items:center;padding:0 16px;background:rgba(255,255,255,.08);color:var(--fg);font:500 14px/1 var(--he);text-decoration:none;backdrop-filter:blur(6px)}
+.phone-fab:hover{background:var(--accent);color:var(--accent-ink)}
+@media (max-width:700px){.phone-fab{display:none}}
+body.phonemode{min-height:100vh;display:grid;justify-items:center;align-content:start;gap:18px;padding:24px 16px;background:#08090a}
+.pbar{display:flex;gap:16px;align-items:center;font:14px/1 var(--he);color:var(--muted)}
+.pdev{width:414px;height:868px;max-height:calc(100vh - 110px);padding:12px;border-radius:44px;background:#1d1f23;box-shadow:0 0 0 2px #2b2e33,0 30px 80px rgba(0,0,0,.6)}
+.pdev iframe{width:390px;height:100%;border:0;border-radius:34px;display:block;background:var(--bg)}
+@media (max-width:860px){.slide .over{max-width:100%;min-width:0}.slide h1{overflow-wrap:anywhere;font-size:clamp(30px,9vw,56px)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <header class="site"><div class="wrap">
@@ -871,7 +879,8 @@ if (!all.length) return;
 let last = performance.now();
 const step = now => {
 const dt = Math.min(48, now - last) / 16.7; last = now;
-all.forEach(o => { const half = o.track.scrollWidth / 2, still = half <= o.st.clientWidth + 2;
+all.forEach(o => { const items = o.track.children, n = items.length / 2, a = items[0], b2 = items[n - 1];
+const half = n && b2 ? (items[n] && items[n].offsetWidth ? items[n].offsetLeft - a.offsetLeft : b2.offsetLeft + b2.offsetWidth - a.offsetLeft + 12) : 0, still = half <= o.st.clientWidth + 2;
 o.st.classList.toggle("still", still); if (still) return;
 o.v += (o.target - o.v) * .06 * dt;
 if (!o.hold && Math.abs(o.v) > .01) { o.pos += o.v * dt; if (o.pos >= half) o.pos -= half; if (o.pos < 0) o.pos += half; o.st.scrollLeft = o.pos; } else o.pos = o.st.scrollLeft; });
@@ -1308,7 +1317,17 @@ fitTrim();
 startGallery();
 window.scrollTo(0, 0);
 }
+const PHONE = new URLSearchParams(location.search).has("phone");
+if (PHONE) {
+document.body.className = "phonemode";
+document.body.innerHTML = `<div class="pbar"><a class="btn" id="pback" href="#">חזרה לתצוגת מחשב</a><span>תצוגת טלפון · 390×844</span></div>
+<div class="pdev"><iframe id="pframe" src="${location.pathname}${location.hash}" title="תצוגת טלפון"></iframe></div>`;
+$("#pback").onclick = e => { e.preventDefault(); location.href = location.pathname + $("#pframe").contentWindow.location.hash; };
+} else {
 addEventListener("hashchange", render);
 render();
+if (window.top === window) { const pb = document.createElement("a"); pb.className = "phone-fab"; pb.textContent = "תצוגת טלפון"; pb.href = "#";
+pb.onclick = e => { e.preventDefault(); location.href = "?phone" + location.hash; }; document.body.append(pb); }
+}
 </script>
 </html>
