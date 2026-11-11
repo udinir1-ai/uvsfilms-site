@@ -1,9 +1,10 @@
 <!doctype html><html><head><meta charset="utf-8"><title>uvs films</title><meta name="robots" content="noindex">
 <script>
-/* old Wix addresses (uvsfilms.com/he/..., /films/<name>) land here and are sent to the matching page of the new site */
-(function(){var p=decodeURIComponent(location.pathname).toLowerCase().split("/").filter(Boolean);var he=p[0]==="he";if(he)p.shift();
+/* site addresses (/films/…, /he/…) open the site itself; old Wix addresses move to the matching new page */
+(function(){var p=decodeURIComponent(location.pathname),he=/^\/he(\/|$)/i.test(p),rest=p.replace(/^\/he/i,"");
+if(/^\/?$/.test(rest)||/^\/(films|in-production|bio)(\/[\w-]+)?\/?$/.test(rest)){fetch("/index.html",{cache:"no-cache"}).then(function(r){return r.text()}).then(function(h){document.open();document.write(h);document.close()});return;}
 var slugs=["tfl","golda","viraldreams","uploading-holocaust","kafka-s-last-story","we-must-talk-now","ournaturalright","it-is-what-it-is","buryadove"];
-var last=(p[p.length-1]||"").replace(/[^a-z0-9-]/g,"");var page="home";
-for(var i=0;i<slugs.length;i++){if(last===slugs[i]||last.replace(/-/g,"")===slugs[i].replace(/-/g,"")){page="f-"+slugs[i];break;}}
-location.replace("/#"+(he?"he-":"")+page);})();
-</script></head><body style="background:#111"></body></html>
+var segs=rest.toLowerCase().split("/").filter(Boolean),last=(segs[segs.length-1]||"").replace(/[^a-z0-9-]/g,""),to=(he?"/he":"")+"/";
+for(var i=0;i<slugs.length;i++){if(last===slugs[i]||last.replace(/-/g,"")===slugs[i].replace(/-/g,"")){to=(he?"/he":"")+"/films/"+slugs[i]+"/";break;}}
+location.replace(to);})();
+</script></head><body style="background:#111214"></body></html>
