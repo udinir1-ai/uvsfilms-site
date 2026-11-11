@@ -170,6 +170,7 @@ footer.site a{text-decoration:none}footer.site a:hover{color:var(--fg)}
 .savebar #saveMsg,.savebar .muted,.upmsg{font:13px/1.4 var(--he);color:var(--muted)}
 .savebar .btn[disabled]{opacity:.45;cursor:default}
 .upbtn{display:inline-block;border:1px dashed var(--line);color:var(--accent);padding:7px 12px;font:500 13px/1 var(--he);cursor:pointer}
+.pform{display:grid;gap:10px;padding:8px 0}.pimg{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pimg img{width:72px;height:90px;object-fit:cover}
 .ed-top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .ed-top h2{font:700 22px/1.2 var(--he);text-transform:none}
 .f{display:grid;gap:6px}
@@ -1268,7 +1269,7 @@ return `<details class="more" data-list="${key}"><summary><span>${label} · ${ar
 }).join("");
 return `<div class="ed">
 <aside class="ed-form">
-<div class="edtabs"><a class="on" href="#edit">עמוד סרט</a><a href="#edit-home">עמוד הבית</a></div>
+${edTabs("edit")}
 ${saveBar()}
 <div class="ed-top"><h2>עריכת עמוד סרט</h2><a class="btn" href="${routePath("f-" + f.slug, he ? "he" : "en")}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
 <div class="f"><label for="pick">סרט</label><select id="pick">${opts}</select></div>
@@ -1407,7 +1408,7 @@ const block = (k, label) => `<details class="more" data-pv="${k}"${k === "slide"
 const mode = SITE.posterRows || "auto";
 return `<div class="ed">
 <aside class="ed-form">
-<div class="edtabs"><a href="#edit">עמוד סרט</a><a class="on" href="#edit-home">עמוד הבית</a></div>
+${edTabs("edit-home")}
 ${saveBar()}
 <div class="ed-top"><h2>עמוד הבית</h2><a class="btn" href="/" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${edLang === "he" ? "on" : ""}">עברית</button><button data-lg="en" class="${edLang === "he" ? "" : "on"}">English</button></div>
@@ -1421,6 +1422,47 @@ ${keyBox()}
 </aside>
 <section class="ed-preview"><div class="tag"><span id="pvname">תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
 </div>`;
+}
+const edTabs = on => `<div class="edtabs">${[["edit-home", "עמוד הבית"], ["edit", "עמודי סרטים"], ["edit-bio", "אודות וקשר"]].map(([h, n]) => `<a${h === on ? ' class="on"' : ""} href="#${h}">${n}</a>`).join("")}</div>`;
+const getPath = p => p.split(".").reduce((o, k) => o == null ? o : o[k], window);
+const setPath = (p, v) => { const ks = p.split("."), last = ks.pop(); ks.reduce((o, k) => o[k], window)[last] = v; };
+function pageEditBio() {
+const he = edLang === "he", S = he ? "SITE_HE" : "SITE", dir = he ? "rtl" : "ltr", sp = (he ? SITE_HE : SITE).people;
+const fld = (label, path, area, cls = dir) => `<div class="f"><label>${label}</label>${area ? `<textarea class="${cls}" data-path="${path}" style="min-height:${area}px">${esc(getPath(path) || "")}</textarea>` : `<input class="${cls}" data-path="${path}" value="${esc(getPath(path) || "")}">`}</div>`;
+const person = (p, i) => `<details class="more"${i ? "" : " open"}><summary><span>${esc(p.name || "אדם " + (i + 1))}</span><span class="plus">+</span></summary>
+<div class="pform"><div class="pimg">${SITE_MEDIA.portraits[i] ? `<img src="${img(SITE_MEDIA.portraits[i], 240)}" alt="">` : ""}${getKey() ? `<label class="upbtn">החלפת תמונה<input type="file" accept="image/*" hidden data-portrait="${i}"></label>` : ""}<span class="upmsg" id="pmsg-${i}"></span></div>
+${fld("שם", `${S}.people.${i}.name`)}${fld("טקסט", `${S}.people.${i}.bio`, 180)}</div></details>`;
+return `<div class="ed">
+<aside class="ed-form">
+${edTabs("edit-bio")}
+${saveBar()}
+<div class="ed-top"><h2>אודות וקשר</h2><a class="btn" href="${routePath("bio", edLang)}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+<div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${he ? "on" : ""}">עברית</button><button data-lg="en" class="${he ? "" : "on"}">English</button></div>
+${fld("משפט פתיחה", `${S}.tagline`, 70)}
+${he ? fld("שם החברה", "SITE_HE.company") : ""}
+${fld("טלפון", `${S}.phone`, 0, "ltr")}
+${sp.map(person).join("")}
+<details class="more"><summary><span>כתובות מייל · ${SITE.emails.length} <small>(משותף לשתי השפות)</small></span><span class="plus">+</span></summary><div class="rows">
+${SITE.emails.map((e, i) => `<div class="row one"><input class="ltr" data-path="SITE.emails.${i}" value="${esc(e)}"><span class="rt"><button class="x" data-ldel="SITE.emails" data-i="${i}" title="מחק">×</button></span></div>`).join("")}
+<button class="add" data-ladd="SITE.emails">הוסף שורה</button></div></details>
+<details class="more"><summary><span>רשתות חברתיות · ${SITE.social.length} <small>(משותף לשתי השפות)</small></span><span class="plus">+</span></summary><div class="rows">
+${SITE.social.map((x, i) => `<div class="row"><input class="ltr" data-path="SITE.social.${i}.0" value="${esc(x[0])}"><input class="ltr wide" data-path="SITE.social.${i}.1" value="${esc(x[1])}"><span class="rt"><button class="x" data-ldel="SITE.social" data-i="${i}" title="מחק">×</button></span></div>`).join("")}
+<button class="add" data-ladd="SITE.social" data-pair="1">הוסף שורה</button></div></details>
+</aside>
+<section class="ed-preview"><div class="tag"><span>תצוגה חיה · אודות</span><i>מתעדכן תוך כדי הקלדה</i></div><div id="live" dir="${dir}"></div></section>
+</div>`;
+}
+function bindEditBio() {
+const live = $("#live");
+const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageBio(); lang = keep; fitTrim(live); };
+redraw();
+document.querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { edLang = b.dataset.lg; render(); });
+document.querySelectorAll("[data-path]").forEach(el => el.oninput = () => { setPath(el.dataset.path, el.value); redraw(); });
+const reopen = k => { render(); const d = document.querySelector(`[data-ladd="${k}"]`); if (d) d.closest("details").open = true; };
+document.querySelectorAll("[data-ladd]").forEach(b => b.onclick = () => { getPath(b.dataset.ladd).push(b.dataset.pair ? ["", ""] : ""); reopen(b.dataset.ladd); });
+document.querySelectorAll("[data-ldel]").forEach(b => b.onclick = () => { getPath(b.dataset.ldel).splice(+b.dataset.i, 1); reopen(b.dataset.ldel); });
+document.querySelectorAll("[data-portrait]").forEach(inp => inp.onchange = async () => { const i = +inp.dataset.portrait, msg = $("#pmsg-" + i); if (!inp.files.length) return;
+try { const [id] = await uploadImages([inp.files[0]], msg); SITE_MEDIA.portraits[i] = id; render(); } catch (e) { msg.textContent = "ההעלאה נכשלה (" + e.message + ")"; } });
 }
 const REPO = "udinir1-ai/uvsfilms-site";
 const getKey = () => { try { return localStorage.getItem("uvsKey") || ""; } catch (e) { return ""; } };
@@ -1552,7 +1594,7 @@ if (h && !/^(he-)?edit/.test(h)) { const lg0 = h.startsWith("he-") ? "he" : "en"
 if (!h) h = pathRoute(location.pathname);
 lang = h.startsWith("he-") ? "he" : "en";
 if (lang === "he") h = h.slice(3);
-if (h === "edit" || h === "edit-home") lang = "he";
+if (/^edit/.test(h)) lang = "he";
 document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
 document.documentElement.lang = lang;
 let html, navKey = h;
@@ -1561,6 +1603,7 @@ else if (h === "in-production") html = pageList("production");
 else if (h === "bio") html = pageBio();
 else if (h === "edit") html = pageEdit();
 else if (h === "edit-home") html = pageEditHome();
+else if (h === "edit-bio") html = pageEditBio();
 else if (h.startsWith("f-")) {
 const f = bySlug(h.slice(2));
 html = f ? pageFilm(f) : pageHome();
@@ -1570,7 +1613,7 @@ $("#nav").innerHTML = [["home", "home"], ["films", "films"], ["in-production", "
 .map(([r, k]) => `<a href="${R(r)}" class="${r === navKey ? "on" : ""}">${t(k)}</a>`).join("");
 $("#logo").href = R("home");
 const other = routePath(h, lang === "he" ? "en" : "he");
-const isEd = h === "edit" || h === "edit-home";
+const isEd = /^edit/.test(h);
 $("#lang").href = isEd ? "/" : other;
 $("#lang").textContent = isEd ? "לאתר" : t("switchTo");
 $("#fab").classList.remove("ask");
@@ -1583,10 +1626,13 @@ $("#foot").innerHTML = footer();
 $("#foot").hidden = isEd;
 if (isEd && !EDITOR) { EDITOR = true; try { localStorage.setItem("uvsEditor", "1"); } catch (e) {} }
 $("#fab").hidden = isEd || !EDITOR;
+$("#fab").href = h.startsWith("f-") ? "#edit" : h === "bio" ? "#edit-bio" : "#edit-home";
+if (!isEd) edLang = lang;
 if (h === "edit") bindEditor();
 if (isEd) bindSave(); else clearInterval(dirtyTimer);
 if (navKey === "home" && !h.startsWith("f-")) startShow();
 if (h === "edit-home") bindEditHome();
+if (h === "edit-bio") bindEditBio();
 layoutPosters();
 layoutMarks();
 layoutQuotes();
