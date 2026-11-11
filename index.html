@@ -317,7 +317,7 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .prow .pr:hover{opacity:1;transform:scale(1.12);z-index:2}
 .pr:hover img{box-shadow:0 0 0 2px var(--accent),0 18px 40px rgba(0,0,0,.6)}
 .pr .pst{font-size:13px;max-width:none}
-@media (max-width:700px){.prow{overflow-x:auto;scrollbar-width:none;padding-bottom:10px}.prow::-webkit-scrollbar{display:none}.pr{flex:none!important;width:150px}.prow .pr:hover{transform:none}.prow:hover .pr{opacity:1}}
+@media (max-width:700px){.prow{display:grid;grid-template-columns:1fr 1fr;gap:26px 16px}.pr{flex:none!important}.prow .pr:hover{transform:none}.prow:hover .pr{opacity:1}.prow .pr:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 8px);justify-self:center}}
 .ps{display:grid;gap:6px;flex:none;text-decoration:none;color:inherit}
 .ps img{height:clamp(240px,26vw,340px);width:auto;display:block;transition:transform .35s ease,box-shadow .35s}
 .ps .pf{position:relative;display:block;height:clamp(240px,26vw,340px);aspect-ratio:2/3;overflow:hidden}
@@ -835,6 +835,7 @@ p.onerror = () => { TONE[id] = ""; apply(""); };
 p.src = img(id, 600);
 });
 }
+const LOGO_MIN_PHONE = .62; /* phone logo size Udi approved (It Is What It Is) — every film uses this size on phones */
 function layoutMarks(root = document) {
 toneMarks(root);
 root.querySelectorAll(".marks").forEach(box => {
@@ -852,10 +853,20 @@ return { el, fx, fy, fw, fh, w, h };
 all.forEach(el => el.classList.toggle("off", !!el.dataset.hide));
 const W = box.clientWidth;
 if (logo) {
-const gap = W < 600 ? 14 : 28, sum = items.reduce((a, x) => a + x.w, 0);
-const sc = Math.min(1, (W - gap * (items.length - 1)) / sum);
-const few = items.length < 2 || (W - sum) / (items.length - 1) > 84;
-box.style.gap = (few ? 56 : gap) + "px"; box.style.justifyContent = few ? "flex-start" : "";
+const gap = W < 600 ? 16 : 28, minSc = W < 600 ? LOGO_MIN_PHONE : .55, n = items.length;
+const rowSc = list => (W - gap * (list.length - 1)) / list.reduce((a, x) => a + x.w, 0);
+let rows = [items];
+for (let r = 1; r <= n; r++) { const per = Math.ceil(n / r), split = []; for (let i = 0; i < n; i += per) split.push(items.slice(i, i + per));
+rows = split; if (Math.min(...split.map(rowSc)) >= minSc) break; }
+const sc = Math.min(W < 600 ? LOGO_MIN_PHONE : 1, ...rows.map(rowSc)); box.dataset.sc = sc.toFixed(2);
+box.querySelectorAll(".lrow").forEach(r => r.replaceWith(...r.children));
+if (rows.length === 1) {
+const sum = items.reduce((a, x) => a + x.w, 0), few = n < 2 || (W - sum * sc) / (n - 1) > 84;
+box.style.gap = (few ? 56 : gap) + "px"; box.style.justifyContent = few ? "flex-start" : ""; box.style.flexDirection = "";
+} else {
+box.style.flexDirection = "column"; box.style.alignItems = "stretch"; box.style.gap = gap + "px";
+rows.forEach(list => { const row = document.createElement("div"); row.className = "lrow"; row.style.cssText = `display:flex;align-items:center;gap:${gap}px;justify-content:flex-start`; list.forEach(x => row.append(x.el)); box.append(row); });
+}
 items.forEach(x => { x.w *= sc; x.h *= sc; });
 } else if (W) {
 let W = box.clientWidth; const gap = W < 600 ? 14 : 28, minSc = W < 600 ? .5 : .78, narrow = W < 600, side = 52;
@@ -990,7 +1001,7 @@ ${ML(f, "poster") ? `<img src="${img(ML(f, "poster"), 700)}" alt="${esc(L(f, "ti
 <span class="pst">${esc(L(f, "title"))}</span><span class="psy">${f.year}</span></a>`).join("")}</div>`;
 }
 function posterStrip(list, own = true) {
-const one = (f, dup) => `<a class="ps" href="${R("f-" + f.slug)}"${own ? ` style="${tint(f)}"` : ""}${dup ? ` aria-hidden="true" tabindex="-1"` : ""}>
+const one = (f, dup) => `<a class="ps" dir="${lang === "he" ? "rtl" : "ltr"}" href="${R("f-" + f.slug)}"${own ? ` style="${tint(f)}"` : ""}${dup ? ` aria-hidden="true" tabindex="-1"` : ""}>
 ${ML(f, "poster") ? `<img src="${img(ML(f, "poster"), 700)}" alt="${esc(L(f, "title"))}" loading="lazy">` : `<span class="pf"><img src="${img(key(f), 700)}"${tr(key(f))} alt="${esc(L(f, "title"))}" loading="lazy"></span>`}
 <span class="pst">${esc(L(f, "title"))}</span><span class="psy">${f.year}</span></a>`;
 if (lang === "he") list = [...list].reverse(); /* the strip runs left-to-right; in Hebrew the first poster sits on the right */
