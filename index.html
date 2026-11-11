@@ -287,6 +287,22 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .strip{position:relative;direction:ltr;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .strip::-webkit-scrollbar{display:none}
 .strack{display:flex;gap:12px;width:max-content;padding-block:8px}
+.strip.still{-webkit-mask-image:none;mask-image:none}
+.strip.still .strack{margin-inline:auto}
+.strip.still [aria-hidden="true"]{display:none}
+.pstrip .strack{gap:22px;align-items:flex-start}
+.ps{display:grid;gap:6px;flex:none;text-decoration:none;color:inherit}
+.ps img{height:clamp(240px,26vw,340px);width:auto;display:block;transition:transform .35s ease,box-shadow .35s}
+.ps .pf{position:relative;display:block;height:clamp(240px,26vw,340px);aspect-ratio:2/3;overflow:hidden}
+.ps .pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ps:hover>img,.ps:hover .pf{transform:translateY(-3px);box-shadow:0 0 0 2px var(--accent)}
+.pst{font:600 14px/1.2 var(--display);margin-top:4px;max-width:22ch}
+.pst:dir(rtl){font-family:var(--he)}
+.psy{font:400 12px/1 var(--mono);color:var(--muted)}
+.icons{display:flex;gap:8px;flex-wrap:wrap}
+.ic{width:38px;height:38px;display:grid;place-items:center;background:rgba(255,255,255,.07);color:var(--fg);border-radius:6px;transition:background .2s,color .2s}
+.ic svg{width:19px;height:19px}
+.ic:hover{background:var(--accent);color:var(--accent-ink)}
 .sh{position:relative;flex:none;width:clamp(170px,21vw,250px);aspect-ratio:3/2;overflow:hidden;padding:0;border:0;background:#0c0d0f;cursor:zoom-in}
 .sh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease,filter .3s;filter:brightness(.82)}
 .sh:hover img,.sh:focus-visible img{transform:scale(1.06);filter:brightness(1)}
@@ -815,18 +831,22 @@ Object.assign(im.style, { width: iw + "px", height: ih + "px", left: -fx * iw + 
 let gtimer = 0;
 function startGallery(root = document) {
 cancelAnimationFrame(gtimer);
-const st = root.querySelector(".strip"); if (!st) return;
-const track = st.querySelector(".strack"), reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-let v = reduce ? 0 : .35, target = v, pos = st.scrollLeft, last = performance.now(), hold = 0;
-st.onmousemove = e => { const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; target = Math.abs(x) < .12 ? 0 : x * 9; };
-st.onmouseleave = () => { target = reduce ? 0 : .35; };
-st.addEventListener("touchstart", () => { hold = 1; target = 0; }, { passive: true });
-st.addEventListener("touchend", () => { hold = 0; pos = st.scrollLeft; setTimeout(() => { if (!hold) target = reduce ? 0 : .35; }, 2500); }, { passive: true });
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, base = reduce ? 0 : .35;
+const all = [...root.querySelectorAll(".strip")].map(st => {
+const o = { st, track: st.querySelector(".strack"), v: base, target: base, pos: st.scrollLeft, hold: 0 };
+st.onmousemove = e => { const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; o.target = Math.abs(x) < .12 ? 0 : x * 9; };
+st.onmouseleave = () => { o.target = base; };
+st.addEventListener("touchstart", () => { o.hold = 1; o.target = 0; }, { passive: true });
+st.addEventListener("touchend", () => { o.hold = 0; o.pos = st.scrollLeft; setTimeout(() => { if (!o.hold) o.target = base; }, 2500); }, { passive: true });
+return o; });
+if (!all.length) return;
+let last = performance.now();
 const step = now => {
 const dt = Math.min(48, now - last) / 16.7; last = now;
-v += (target - v) * .06 * dt;
-const half = track.scrollWidth / 2;
-if (!hold && Math.abs(v) > .01) { pos += v * dt; if (pos >= half) pos -= half; if (pos < 0) pos += half; st.scrollLeft = pos; } else pos = st.scrollLeft;
+all.forEach(o => { const half = o.track.scrollWidth / 2, still = half <= o.st.clientWidth + 2;
+o.st.classList.toggle("still", still); if (still) return;
+o.v += (o.target - o.v) * .06 * dt;
+if (!o.hold && Math.abs(o.v) > .01) { o.pos += o.v * dt; if (o.pos >= half) o.pos -= half; if (o.pos < 0) o.pos += half; o.st.scrollLeft = o.pos; } else o.pos = o.st.scrollLeft; });
 gtimer = requestAnimationFrame(step);
 };
 gtimer = requestAnimationFrame(step);
@@ -874,6 +894,23 @@ function frame(ratio, cap, tc, inner = "", id = "", w = 1600, eager = false) {
 const pic = id ? `<img src="${img(id, w)}"${tr(id)} alt="" ${eager ? "" : `loading="lazy"`} decoding="async">` : "";
 return `<div class="frame ${ratio}${id ? " has-img" : ""}">${pic}${inner}${!id && tc ? `<span class="tc">${esc(tc)}</span>` : ""}${!id ? `<span class="cap">${esc(cap)}</span>` : ""}</div>`;
 }
+const ICONS = {
+facebook: '<path d="M14 8.5V7c0-.7.3-1 1-1h1.5V3H14c-2.3 0-3.5 1.4-3.5 3.6v1.9H8.5V11h2v10h3.5V11h2.3l.4-2.5z"/>',
+instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.2"/>',
+youtube: '<path d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.6 2.6 0 0 0 2.4 7.2 27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8zM10 15V9l5.2 3z"/>',
+vimeo: '<path d="M21.5 7.4c-.1 1.9-1.4 4.5-4 7.8-2.6 3.4-4.8 5.1-6.6 5.1-1.1 0-2.1-1-2.8-3.1L6.6 12c-.6-2.1-1.2-3.1-1.8-3.1-.1 0-.7.3-1.5.9l-.9-1.2 2.8-2.5c1.3-1.1 2.2-1.7 2.8-1.7 1.5-.1 2.4.9 2.8 3.1.4 2.4.7 3.9.8 4.5.4 2 .9 3 1.4 3 .4 0 1-.6 1.8-1.9.8-1.3 1.2-2.2 1.3-2.9.1-1.1-.3-1.7-1.3-1.7-.5 0-.9.1-1.4.3.9-3 2.7-4.5 5.3-4.4 1.9.1 2.8 1.3 2.8 3.6z"/>',
+imdb: '<rect x="2" y="6" width="20" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 9.5h1.4v5H6zM8.4 9.5h1.6l.5 2.4.5-2.4h1.6v5h-1.2v-3l-.6 3h-.7l-.6-3v3H8.4zM13 9.5h2c1 0 1.5.5 1.5 1.4v2.2c0 .9-.5 1.4-1.5 1.4h-2zm1.3 1v3h.4c.3 0 .4-.1.4-.5v-2c0-.4-.1-.5-.4-.5z"/>',
+web: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z" fill="none" stroke="currentColor" stroke-width="1.6"/>'
+};
+const iconFor = u => { const k = /facebook|fb\.com/i.test(u) ? "facebook" : /instagram/i.test(u) ? "instagram" : /youtu/i.test(u) ? "youtube" : /vimeo/i.test(u) ? "vimeo" : /imdb/i.test(u) ? "imdb" : "web";
+return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">${ICONS[k]}</svg>`; };
+function posterStrip(list, own = true) {
+const one = (f, dup) => `<a class="ps" href="${R("f-" + f.slug)}"${own ? ` style="${tint(f)}"` : ""}${dup ? ` aria-hidden="true" tabindex="-1"` : ""}>
+${M(f).poster ? `<img src="${img(M(f).poster, 700)}" alt="${esc(L(f, "title"))}" loading="lazy">` : `<span class="pf"><img src="${img(key(f), 700)}"${tr(key(f))} alt="${esc(L(f, "title"))}" loading="lazy"></span>`}
+<span class="pst">${esc(L(f, "title"))}</span><span class="psy">${f.year}</span></a>`;
+if (lang === "he") list = [...list].reverse(); /* the strip runs left-to-right; in Hebrew the first poster sits on the right */
+return `<div class="strip pstrip"><div class="strack">${list.map(f => one(f)).join("")}${list.map(f => one(f, 1)).join("")}</div></div>`;
+}
 function posterCard(f) {
 return `<a class="poster" href="${R("f-" + f.slug)}" style="${tint(f)}">
 ${M(f).poster ? `<div class="frame r23 has-img"><img src="${img(M(f).poster, 600)}" alt="${esc(L(f, "title"))}" loading="lazy"></div><span class="pn">${esc(L(f, "title"))}</span>` : `<div class="frame r23 has-img"><img src="${img(key(f), 900)}"${tr(key(f))} alt="" loading="lazy"><span class="pt">${esc(L(f, "title"))}</span></div>`}
@@ -900,7 +937,7 @@ ${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>`
 const upcoming = () => SCREENINGS.filter(s => new Date(s.date + "T23:59:59") >= new Date()).sort((a, b) => a.date.localeCompare(b.date));
 function pageHome() {
 const all = slideList(), up = upcoming();
-const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}" style="${tint(f)}">
+const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}">
 ${frame("r169", "KEY IMAGE", "", "", key(f), 2000, i === 0)}
 <div class="over"><div class="eyebrow">${f.status === "production" ? t("inProd") : (i === all.findIndex(x => x.status === "released") ? t("newFilm") : t("doc"))} · ${f.year}</div>
 <h1>${esc(L(f, "title"))}</h1><p class="lede">${esc(L(f, "logline"))}</p>
@@ -910,14 +947,14 @@ return `<div class="wrap">
 <div class="stage">${slides}<div class="ctrl"><button id="prev" aria-label="${t("prev")}">${lang === "he" ? "→" : "←"}</button><button id="next" aria-label="${t("next")}">${lang === "he" ? "←" : "→"}</button></div></div>
 </section>
 <section class="section"><div class="sec-head"><h3>${t("screenings")}</h3></div>${screeningsList(up)}</section>
-<section class="section"><h3>${t("allFilms")}</h3><div class="pgrid">${posterList().map(posterCard).join("")}</div></section>
+<section class="section"><h3>${t("allFilms")}</h3>${posterStrip(posterList(), false)}</section>
 ${(lang === "he" ? SITE_HE.tagline : SITE.tagline) ? `<section class="section"><p class="statement">${esc(lang === "he" ? SITE_HE.tagline : SITE.tagline)}</p></section>` : ""}
 </div>`;
 }
 function pageList(kind) {
 const list = ordered().filter(f => f.status === kind);
 return `<div class="wrap"><section class="film-head"><h1>${kind === "released" ? t("films") : t("prod")}</h1></section>
-<section class="section" style="border:0">${kind === "released" ? `<div class="pgrid">${posterList().map(posterCard).join("")}</div>` : `<div class="wgrid">${list.map(wideCard).join("")}</div>`}</section></div>`;
+<section class="section" style="border:0">${kind === "released" ? posterStrip(posterList()) : `<div class="wgrid">${list.map(wideCard).join("")}</div>`}</section></div>`;
 }
 function pageFilm(f) {
 const media = M(f), gal = ML(f, "gallery"), laurelIds = ML(f, "laurels"), partnerIds = ML(f, "partners");
@@ -936,7 +973,7 @@ if (team.length) cred.push(`<h3 class="ch">${t("team")}</h3>${team.map(([r, n]) 
 if (tech.length) cred.push(`<h3 class="ch">${t("tech")}</h3>${tech.map(([r, n]) => `<dt>${esc(r)}</dt><dd>${esc(n)}</dd>`).join("")}`);
 if (pitching.length) cred.push(`<h3 class="ch side">${esc(pTitle)}</h3><dd class="pl">${pitching.map(p => `<span>${esc(p)}</span>`).join("")}</dd>`);
 if (cred.length) side.push(`<dl class="credits">${cred.join("")}</dl>`);
-if (links.length) side.push(`<div><h3>${t("links")}</h3><ul class="plain">${links.map(([x, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(x)} ↗</a></li>`).join("")}</ul></div>`);
+if (links.length) side.push(`<div class="icons">${links.map(([x, u]) => `<a class="ic" href="${esc(u)}" target="_blank" rel="noopener" aria-label="${esc(x)}" title="${esc(x)}">${iconFor(u)}</a>`).join("")}</div>`);
 const mark = (id, alt, hide) => `<span class="mk" data-id="${id}"${hide ? ` data-hide="1"` : ""}><img src="${img(id, 600)}" alt="${esc(alt || "")}" loading="lazy"></span>`;
 const hid = media.laurelsHidden || [];
 const laurels = laurelIds.length ? `<section class="section laurels-band"><div class="marks laurels" data-kind="laurel">${laurelIds.map(id => mark(id, "", hid.includes(id))).join("")}</div></section>` : "";
@@ -1153,7 +1190,7 @@ return `<div class="ed">
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${edLang === "he" ? "on" : ""}">עברית</button><button data-lg="en" class="${edLang === "he" ? "" : "on"}">English</button></div>
 <div class="f"><label>סדר הגלריה המתחלפת</label><ul class="sortable" data-key="slide">${rows(slideList(), "slide")}</ul></div>
 <div class="f"><label>סדר הפוסטרים</label><ul class="sortable" data-key="poster">${rows(posterList(), "poster")}</ul></div>
-<div class="f"><label>פריסת הפוסטרים</label><div class="seg" role="group"><button data-rows="auto" class="${mode === "auto" ? "on" : ""}">אוטומטי</button><button data-rows="1" class="${mode === "1" ? "on" : ""}">שורה אחת</button><button data-rows="2" class="${mode === "2" ? "on" : ""}">שתי שורות</button></div></div>
+<div class="f"><label>צבע הדגשה של עמוד הבית</label><div class="swatches"><button type="button" class="eyedrop" id="eyedrop" title="לוחצים, ואז על כל נקודה בעמוד"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5l5 5M17 2.5a2.1 2.1 0 0 1 3 3l-2.5 2.5-3-3zM14.5 5L5 14.5V19h4.5L19 9.5"/></svg>דגימה מהעמוד</button><input type="color" id="color" value="${/^#[0-9a-f]{6}$/i.test(SITE.homeColor || "") ? SITE.homeColor : "#e2c48f"}" aria-label="בחירת צבע"></div></div>
 <div class="note">גוררים שורה למעלה או למטה, או לוחצים על החצים. גרסת הדגמה: עוד לא נשמר.</div>
 </aside>
 <section class="ed-preview"><div class="tag"><span>תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
@@ -1161,7 +1198,10 @@ return `<div class="ed">
 }
 function bindEditHome() {
 const live = $("#live");
-const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageHome(); lang = keep; layoutPosters(); startShow(); };
+const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pageHome(); lang = keep; document.documentElement.style.cssText = tint({ color: SITE.homeColor }); layoutPosters(); startShow(); startGallery(live); };
+const setColor = c => { SITE.homeColor = c; $("#color").value = c; redraw(); };
+$("#color").oninput = e => setColor(e.target.value);
+$("#eyedrop").onclick = () => sampleColor(setColor);
 redraw();
 const save = ul => { const k = ul.dataset.key === "slide" ? "slideOrder" : "posterOrder"; SITE[k] = [...ul.children].map(li => li.dataset.slug); redraw(); };
 document.querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { edLang = b.dataset.lg; render(); });
@@ -1205,7 +1245,7 @@ $("#lang").href = isEd ? "#home" : other;
 $("#lang").textContent = isEd ? "לאתר" : t("switchTo");
 $("#fab").classList.remove("ask");
 const fp = h.startsWith("f-") && bySlug(h.slice(2));
-document.documentElement.style.cssText = fp ? tint(fp) : "";
+document.documentElement.style.cssText = fp ? tint(fp) : (h === "home" ? tint({ color: SITE.homeColor }) : "");
 $("#app").innerHTML = html;
 $("#foot").innerHTML = footer();
 $("#foot").hidden = isEd;
@@ -1217,7 +1257,7 @@ layoutPosters();
 layoutMarks();
 layoutQuotes();
 fitTrim();
-if (h.startsWith("f-")) startGallery();
+startGallery();
 window.scrollTo(0, 0);
 }
 addEventListener("hashchange", render);
