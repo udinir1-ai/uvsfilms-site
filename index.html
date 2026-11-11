@@ -163,6 +163,9 @@ footer.site a{text-decoration:none}footer.site a:hover{color:var(--fg)}
 .edit-fab{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:8;font:700 14px/1 var(--he);direction:rtl;background:var(--accent);color:var(--accent-ink);border:0;padding:12px 16px;cursor:pointer;text-decoration:none}
 .ed{direction:rtl;font-family:var(--he);display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);min-height:calc(100vh - 60px)}
 .ed-form{background:var(--panel);border-left:1px solid var(--line);padding:20px 18px 80px;display:grid;gap:16px;align-content:start}
+.keybox .kb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0}
+.keybox input{flex:1 1 200px;min-width:0;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;font:14px/1.2 var(--mono)}
+.keybox .ok{color:var(--accent)}.keybox .kmsg{font-size:13px;color:var(--muted);width:100%}
 .ed-top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .ed-top h2{font:700 22px/1.2 var(--he);text-transform:none}
 .f{display:grid;gap:6px}
@@ -674,12 +677,8 @@ pitching: ["קופרו 2025","מעבדת קלוז-אפ 2025","מדימד, 2025",
 links: []
 }
 };
-// Screenings — in the real site these come from CineVerse. The rows below are EXAMPLES for the design only.
-window.SCREENINGS = [
-{ date: "2026-12-03", time: "19:30", slug: "tfl", city: ["Example City", "עיר לדוגמה"], venue: ["Example Jewish Film Festival", "פסטיבל לדוגמה"], qa: true, example: true },
-{ date: "2026-12-14", time: "20:00", slug: "golda", city: ["Example City", "עיר לדוגמה"], venue: ["Example University", "אוניברסיטה לדוגמה"], qa: true, example: true },
-{ date: "2027-01-22", time: "18:00", slug: "uploading-holocaust", city: ["Example City", "עיר לדוגמה"], venue: ["Example Cinematheque", "סינמטק לדוגמה"], qa: false, example: true }
-];
+// Screenings — will come from CineVerse (CineDistribute). Empty until then: the site shows the newsletter line instead.
+window.SCREENINGS = [];
 </script>
 <script>// Images from the current uvsfilms.com media library (Wix). Each entry is a Wix media id.
 // Before leaving Wix these files are copied into the site's own /img folder; only IMG_BASE changes then.
@@ -1315,11 +1314,28 @@ ${block("films", "עמוד סרטים")}
 ${block("prod", "עמוד בהפקה")}
 <div class="f"><label>צבע הדגשה של עמוד הבית</label><div class="swatches"><button type="button" class="eyedrop" id="eyedrop" title="לוחצים, ואז על כל נקודה בעמוד"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5l5 5M17 2.5a2.1 2.1 0 0 1 3 3l-2.5 2.5-3-3zM14.5 5L5 14.5V19h4.5L19 9.5"/></svg>דגימה מהעמוד</button><input type="color" id="color" value="${/^#[0-9a-f]{6}$/i.test(SITE.homeColor || "") ? SITE.homeColor : "#e2c48f"}" aria-label="בחירת צבע"></div></div>
 <div class="note">גוררים שורה או לוחצים על החצים. העין מסתירה סרט מהמקום הזה בלבד. גרסת הדגמה: עוד לא נשמר.</div>
+${keyBox()}
 </aside>
 <section class="ed-preview"><div class="tag"><span id="pvname">תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
 </div>`;
 }
+const REPO = "udinir1-ai/uvsfilms-site";
+const getKey = () => { try { return localStorage.getItem("uvsKey") || ""; } catch (e) { return ""; } };
+const keyBox = () => `<details class="more keybox"><summary><span>חיבור לשמירה ${getKey() ? "· מחובר ✓" : ""}</span><span class="plus">+</span></summary>
+<div class="kb">${getKey() ? `<span class="ok">הדפדפן הזה מחובר לאתר.</span><button type="button" class="btn" data-key-off>ניתוק</button>`
+: `<input type="password" id="ghkey" class="ltr" placeholder="מדביקים כאן את המפתח" autocomplete="off" aria-label="מפתח"><button type="button" class="btn" data-key-on>חיבור</button>`}<span class="kmsg" id="kmsg"></span></div></details>`;
+function bindKey(root) {
+root.addEventListener("click", async e => {
+if (e.target.closest("[data-key-off]")) { try { localStorage.removeItem("uvsKey"); } catch (x) {} render(); return; }
+if (!e.target.closest("[data-key-on]")) return;
+const k = ($("#ghkey").value || "").trim(), msg = $("#kmsg"); if (!k) return; msg.textContent = "בודק…";
+try { const r = await fetch(`https://api.github.com/repos/${REPO}`, { headers: { Authorization: "Bearer " + k, Accept: "application/vnd.github+json" } });
+const j = await r.json(); if (!r.ok || !j.permissions || !j.permissions.push) { msg.textContent = "המפתח לא מתאים. צריך הרשאת כתיבה לאתר הזה."; return; }
+localStorage.setItem("uvsKey", k); render(); } catch (x) { msg.textContent = "לא הצלחתי לבדוק. נסו שוב."; }
+});
+}
 function bindEditHome() {
+bindKey($(".ed-form"));
 const live = $("#live");
 let pv = "home";
 const redraw = () => { const keep = lang; lang = edLang; live.innerHTML = pv === "films" ? pageList("released") : pv === "prod" ? pageList("production") : pageHome(); lang = keep;
