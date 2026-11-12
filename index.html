@@ -224,6 +224,10 @@ body.sorting,body.sorting *{cursor:grabbing!important;user-select:none!important
 .it .star{width:100%;height:26px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:12px/1 var(--he)}
 .it .star.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .lang-mode{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:13px/1.4 var(--he);color:var(--muted);margin-top:8px}
+.ordask{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:10px;border:1px solid var(--accent);font:500 13px/1.3 var(--he)}
+.ordask button{height:32px;padding:0 12px;border:1px solid var(--accent);background:transparent;color:var(--accent);font:600 13px/1 var(--he);cursor:pointer}
+.ordask button.solid{background:var(--accent);color:var(--accent-ink)}
+.ordask .no{border:0;color:var(--muted);font-weight:400;text-decoration:underline}
 .lang-mode button,.addimg button{background:transparent;border:1px dashed var(--line);color:var(--accent);padding:6px 10px;font:500 13px/1 var(--he);cursor:pointer}
 .addimg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;margin-top:10px}
 .addimg input{background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:7px 8px;font:13px/1.4 var(--body);min-width:0}
@@ -1261,12 +1265,12 @@ return IMGL.map(([k, label, mark]) => {
 const own = !!m[k + "He"], list = ML(f, k, edLang), still = ML(f, "trailerStill", edLang) || list[1] || list[0];
 const mode = he ? (own ? `<span>לעברית יש גרסה משלה.</span><button type="button" data-same="${k}">חזרה להיות כמו באנגלית</button>` : `<span>כרגע זהה לאנגלית.</span><button type="button" data-own="${k}">גרסה נפרדת לעברית</button>`)
 : (own ? `<span>לעברית יש גרסה נפרדת.</span>` : `<span>משותף לשתי השפות.</span>`);
-const tiles = list.map((id, i) => `<div class="irow si${mark ? " mk2" : ""}"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><div class="ph"><img src="${img(id, 240)}" alt="" loading="lazy" draggable="false"></div>
+const tiles = list.map((id, i) => `<div class="irow si${mark ? " mk2" : ""}" data-n="${i}"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><div class="ph"><img src="${img(id, 240)}" alt="" loading="lazy" draggable="false"></div>
 <div class="acts">${k === "gallery" ? `<button type="button" class="star${id === key(f) ? " on" : ""}" data-key-img="${i}">${id === key(f) ? "תמונה ראשית ✓" : "קבע כתמונה ראשית"}</button>` : ""}
 ${k === "gallery" && f.trailer ? `<button type="button" class="star${id === still ? " on" : ""}" data-still="${i}">${id === still ? "מעל הטריילר ✓" : "שים מעל הטריילר"}</button>` : ""}</div>
 <button type="button" class="x" data-idel="${k}" data-i="${i}" title="מחק">×</button></div>`).join("");
 return `<details class="more" data-list="${k}"><summary><span>${label} · ${list.length}</span><span class="plus">+</span></summary>
-<div class="lang-mode">${mode}</div><div class="itl" data-sort-img="${k}">${tiles}</div>
+<div class="lang-mode">${mode}</div><div class="ordask" id="ordask-${k}" hidden></div><div class="itl" data-sort-img="${k}">${tiles}</div>
 <div class="addimg">${getKey() ? `<label class="upbtn">העלאת תמונה<input type="file" accept="image/*" multiple hidden data-up="${k}"></label><span class="upmsg" id="upmsg-${k}"></span>` : `<span class="upmsg">כדי להעלות תמונות: לחבר מפתח בלשונית "עמוד הבית".</span>`}
 ${own ? `<label><input type="checkbox" id="both-${k}" checked> להוסיף גם ${other}</label>` : ""}</div></details>`;
 }).join("");
@@ -1275,7 +1279,20 @@ function bindImgLists(f, reopen) {
 const m = M(f), lk = k => edLang === "he" && m[k + "He"] ? k + "He" : k;
 document.querySelectorAll("[data-own]").forEach(b => b.onclick = () => { const k = b.dataset.own; m[k + "He"] = [...(m[k] || [])]; if (k === "gallery" && m.trailerStill) m.trailerStillHe = m.trailerStill; reopen(k); });
 document.querySelectorAll("[data-same]").forEach(b => b.onclick = () => { const k = b.dataset.same; delete m[k + "He"]; if (k === "gallery") delete m.trailerStillHe; reopen(k); });
-document.querySelectorAll("[data-sort-img]").forEach(box => sortable(box, order => { const k = box.dataset.sortImg; reorder(m[lk(k)], order); reopen(k); }));
+document.querySelectorAll("[data-sort-img]").forEach(box => sortable(box, () => {
+const k = box.dataset.sortImg, ask = $("#ordask-" + k), order = [...box.children].map(el => +el.dataset.n);
+const he = edLang === "he", here = he ? "בעברית" : "באנגלית";
+ask.hidden = false;
+ask.innerHTML = `<span>הסדר החדש:</span><button type="button" class="solid" data-o="both">בשתי השפות</button><button type="button" data-o="one">רק ${here}</button><button type="button" class="no" data-o="no">ביטול</button>`;
+ask.onclick = e => { const b = e.target.closest("[data-o]"); if (!b) return; const how = b.dataset.o;
+if (how !== "no") {
+const shared = !m[k + "He"], cur = m[lk(k)], next = order.map(i => cur[i]);
+if (shared) { if (how === "both") m[k] = next; else if (he) m[k + "He"] = next; else { m[k + "He"] = [...cur]; m[k] = next; } }
+else { const other = he ? k : k + "He"; m[lk(k)] = next;
+if (how === "both" && m[other]) { const common = next.filter(id => m[other].includes(id)); let j = 0; m[other] = m[other].map(id => next.includes(id) ? common[j++] : id); } }
+}
+reopen(k); };
+}));
 document.querySelectorAll("[data-idel]").forEach(b => b.onclick = () => { const k = b.dataset.idel; m[lk(k)].splice(+b.dataset.i, 1); reopen(k); });
 document.querySelectorAll("[data-key-img]").forEach(b => b.onclick = () => { m.keyImage = m[lk("gallery")][+b.dataset.keyImg]; reopen("gallery"); });
 document.querySelectorAll("[data-still]").forEach(b => b.onclick = () => { m[edLang === "he" && m.galleryHe ? "trailerStillHe" : "trailerStill"] = m[lk("gallery")][+b.dataset.still]; reopen("gallery"); });
