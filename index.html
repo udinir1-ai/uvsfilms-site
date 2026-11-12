@@ -253,7 +253,9 @@ body.sorting,body.sorting *{cursor:grabbing!important;user-select:none!important
 .film-hero .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
 .film-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 2%,rgba(17,18,20,.55) 45%,rgba(17,18,20,.15) 100%)}
 .hero-in{position:relative;z-index:1;width:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding-block:120px 36px}
-.hero-text{display:grid;gap:16px;max-width:720px;min-width:0}
+.hero-text{display:grid;gap:16px;min-width:0;flex:1 1 auto}
+.hero-text>:not(h1){max-width:720px}
+.hero-text h1{min-width:0;overflow-wrap:normal}
 .hero-poster{width:200px;max-width:100%;aspect-ratio:2/3;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);flex:none}
 .laurels-band{padding-block:28px}
 .marks.laurels{flex-direction:column;flex-wrap:nowrap}
@@ -1008,7 +1010,16 @@ const ML = (f, k, lg = lang) => { const m = M(f); return (lg === "he" && m[k + "
 const inkFor = hex => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255].map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2] > .18 ? "#140a0e" : "#ffffff"; };
 const tint = f => /^#[0-9a-f]{6}$/i.test(f.color || "") ? `--accent:${f.color};--accent-ink:${inkFor(f.color)}` : "";
 const tr = id => { const k = String(id || "").split("_").pop().split("~")[0], v = (window.TRIM || {})[k]; return v ? ` data-t="${v.join(",")}"` : ""; };
+function fitHeads(root = document) {
+root.querySelectorAll(".hero-text h1,.slide .over h1").forEach(h => {
+h.style.fontSize = ""; if (!h.clientWidth) return;
+let fs = parseFloat(getComputedStyle(h).fontSize);
+while (h.scrollWidth > h.clientWidth + 1 && fs > 22) { fs = Math.max(22, fs * .94); h.style.fontSize = fs + "px"; }
+});
+}
+if (document.fonts) document.fonts.ready.then(() => fitHeads());
 function fitTrim(root = document) {
+fitHeads(root);
 root.querySelectorAll("img[data-t]").forEach(im => {
 const run = () => {
 const box = im.parentElement, W = box.clientWidth, H = box.clientHeight;
