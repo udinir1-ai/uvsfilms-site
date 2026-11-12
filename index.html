@@ -1095,16 +1095,16 @@ if (!r.ok) throw 0; f.innerHTML = `<output class="ok">${he ? "תודה! נרשמ
 catch (err) { out.textContent = he ? "משהו השתבש, נסו שוב בעוד רגע" : "Something went wrong, please try again"; }
 } else { location.href = `mailto:${SITE.emails[0]}?subject=${encodeURIComponent(he ? "הרשמה לניוזלטר" : "Newsletter sign-up")}&body=${encodeURIComponent(email)}`; }
 });
-const watchList = f => { const w = L(f, "watch") || []; return w.length ? `<div class="watch"><span class="wl2">${t("watch")}</span>${w.filter(([x]) => x).map(([x, u]) => /^https?:/.test(u || "") ? `<a class="wchip" href="${esc(u)}" target="_blank" rel="noopener">${esc(x)}<i>↗</i></a>` : `<span class="wchip">${esc(x)}</span>`).join("")}</div>` : ""; };
+const watchList = f => { const fw = (lang === "he" && FEED.watchHe[f.slug]) || FEED.watch[f.slug], w = (fw && fw.length ? fw : L(f, "watch")) || []; return w.length ? `<div class="watch"><span class="wl2">${t("watch")}</span>${w.filter(([x]) => x).map(([x, u]) => /^https?:/.test(u || "") ? `<a class="wchip" href="${esc(u)}" target="_blank" rel="noopener">${esc(x)}<i>↗</i></a>` : `<span class="wchip">${esc(x)}</span>`).join("")}</div>` : ""; };
 const FEED_URL = "https://cine-verse.ai.studio/api/public/site-feed";
+const FEED = { watch: {}, watchHe: {} };
 async function loadFeed() {
 try {
 const r = await fetch(FEED_URL, { cache: "no-store" }); if (!r.ok) return; const j = await r.json();
 const norm = x => String(x || "").replace(/_/g, "-"), ok = sl => FILMS.some(f => f.slug === sl);
 SCREENINGS = (j.screenings || []).map(s => ({ ...s, slug: norm(s.slug) })).filter(s => ok(s.slug) && /^\d{4}-\d{2}-\d{2}$/.test(s.date || ""));
-FILMS.forEach(f => { f.watch = []; if (HE[f.slug]) HE[f.slug].watch = []; });
-for (const [k, list] of Object.entries(j.watch || {})) { const f = bySlug(norm(k)); if (f) f.watch = list; }
-for (const [k, list] of Object.entries(j.watchHe || {})) { const sl = norm(k); if (ok(sl)) (HE[sl] = HE[sl] || {}).watch = list; }
+const pairs = l => (Array.isArray(l) ? l : []).filter(x => Array.isArray(x) && x[0]);
+for (const k of ["watch", "watchHe"]) { FEED[k] = {}; for (const [sl, list] of Object.entries(j[k] || {})) if (ok(norm(sl))) FEED[k][norm(sl)] = pairs(list); }
 if (!/^#?(he-)?edit/.test(location.hash)) { const y = scrollY; render(); scrollTo(0, y); }
 } catch (e) {}
 }
@@ -1725,6 +1725,7 @@ document.addEventListener("click", e => { const a = e.target.closest("a[href^='/
 const u = new URL(a.href); if (u.origin !== location.origin || /\.(js|xml|txt|png|jpe?g)$/i.test(u.pathname)) return;
 e.preventDefault(); history.pushState(null, "", u.pathname + u.hash); render(); });
 render();
+loadFeed();
 if (window.top === window && EDITOR) { const pb = document.createElement("a"); pb.className = "phone-fab"; pb.textContent = "תצוגת טלפון"; pb.href = "#";
 pb.onclick = e => { e.preventDefault(); location.href = location.pathname + "?phone" + location.hash; }; document.body.append(pb); }
 }
