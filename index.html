@@ -166,9 +166,12 @@ footer.site a{text-decoration:none}footer.site a:hover{color:var(--fg)}
 .keybox .kb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0}
 .keybox input{flex:1 1 200px;min-width:0;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;font:14px/1.2 var(--mono)}
 .keybox .ok{color:var(--accent)}.keybox .kmsg{font-size:13px;color:var(--muted);width:100%}
-.savebar{position:sticky;top:0;z-index:3;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel);padding:8px 0;border-bottom:1px solid var(--line)}
+.savebar{position:sticky;top:0;z-index:3;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);padding:10px 0;border-bottom:1px solid var(--line)}
 .savebar #saveMsg,.savebar .muted,.upmsg{font:13px/1.4 var(--he);color:var(--muted)}
-.savebar .btn[disabled]{opacity:.45;cursor:default}
+.savebar #saveMsg,.savebar .muted{flex:1 1 140px;min-width:0}
+.eb{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 16px;font:600 14px/1 var(--he);letter-spacing:0;text-transform:none;text-decoration:none;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;flex:none}
+.eb.solid{background:var(--accent);color:var(--accent-ink)}
+.eb[disabled]{opacity:.45;cursor:default}
 .upbtn{display:inline-block;border:1px dashed var(--line);color:var(--accent);padding:7px 12px;font:500 13px/1 var(--he);cursor:pointer}
 .pform{display:grid;gap:10px;padding:8px 0}.pimg{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pimg img{width:72px;height:90px;object-fit:cover}
 .ed-top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
@@ -190,13 +193,27 @@ details.more summary small{color:var(--muted);font-weight:400}
 details.more summary .plus{width:24px;height:24px;border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);font:500 16px/1 var(--mono)}
 details.more[open] summary .plus{transform:rotate(45deg)}
 details.more .rows{display:grid;gap:8px;margin-top:10px}
-.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center}
-.row.one{grid-template-columns:minmax(0,1fr) auto}
-.row input.wide{grid-column:1/3}
+.row{display:grid;grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;align-items:center}
+.row.one{grid-template-columns:22px minmax(0,1fr) 30px}
+.row input.wide{grid-column:2/4}
+.row>.x{grid-row:1;grid-column:-2;height:32px}
+.slist{display:grid;gap:8px}
+.grip{display:grid;place-items:center;align-self:stretch;min-height:30px;color:var(--muted);font:12px/1 var(--mono);letter-spacing:-2px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.grip:hover{color:var(--accent)}
+.si.dragging{opacity:.55;outline:1px dashed var(--accent);outline-offset:2px}
+body.sorting,body.sorting *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.irow{display:grid;grid-template-columns:22px 96px minmax(0,1fr) 30px;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--line);padding:6px;cursor:grab}
+.irow .ph{aspect-ratio:3/2;background:#000;overflow:hidden}
+.irow .ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.irow.mk2 .ph img{object-fit:contain;padding:6px;filter:brightness(0) invert(1)}
+.irow .acts{display:grid;gap:4px;justify-items:start;min-width:0}
+.irow .star{height:26px;padding:0 10px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:12px/1 var(--he)}
+.irow .star.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.irow .x{height:30px}
 .rt{display:flex;gap:2px}
 .rt button,.mv2{width:26px;height:30px;background:transparent;border:1px solid var(--line);color:var(--muted);cursor:pointer;font:13px/1 var(--mono)}
 .rt button:hover{color:var(--accent);border-color:var(--accent)}
-.itl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.itl{display:grid;gap:6px;margin-top:10px}
 .it{display:grid;gap:4px}
 .it .ph{position:relative;aspect-ratio:3/2;background:#000;overflow:hidden}
 .it .ph img{width:100%;height:100%;object-fit:cover}
@@ -282,7 +299,7 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .edtabs a{padding:8px 12px;text-decoration:none;color:var(--muted);font:500 14px/1 var(--he);border-bottom:2px solid transparent;margin-bottom:-1px}
 .edtabs a.on{color:var(--fg);border-color:var(--accent)}
 .sortable{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.srt{display:grid;grid-template-columns:18px 44px minmax(0,1fr) 28px 28px 28px;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:6px 8px;cursor:grab}
+.srt{display:grid;grid-template-columns:22px 44px minmax(0,1fr) 28px;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:6px 8px;cursor:grab}
 .srt.dragging{opacity:.4}
 .srt .eye{width:28px;height:28px;display:grid;place-items:center;background:transparent;border:0;color:var(--fg);cursor:pointer}
 .srt .eye svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6}
@@ -290,10 +307,7 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .srt.off .eye svg{stroke:var(--muted)}
 .srt.off .eye{position:relative}.srt.off .eye::after{content:"";position:absolute;width:20px;height:1.6px;background:var(--muted);transform:rotate(-40deg)}
 .srt img{width:44px;height:30px;object-fit:cover}
-.srt .grip{color:var(--muted);font-size:12px;letter-spacing:-2px}
 .srt .nm{font:500 14px/1.3 var(--he);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mv{background:transparent;border:1px solid var(--line);color:var(--muted);height:26px;cursor:pointer}
-.mv:hover{color:var(--accent);border-color:var(--accent)}
 .marks{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:26px 34px}
 .marks.logos{flex-wrap:nowrap;justify-content:space-between}
 .mk{position:relative;display:block;overflow:hidden;flex:none}
@@ -1185,6 +1199,26 @@ $("#next").onclick = () => { go(cur + 1); tick(); };
 thumbs.forEach(b => b.onclick = () => { go(+b.dataset.go); tick(); });
 tick();
 }
+const reorder = (arr, order) => { const copy = order.map(i => arr[i]); arr.splice(0, arr.length, ...copy); };
+function sortable(box, done) {
+box.addEventListener("pointerdown", e => {
+const it = e.target.closest(".si");
+if (!it || it.parentNode !== box || e.button > 0) return;
+if (e.target.closest("button,input,textarea,select,label,a") || (e.pointerType !== "mouse" && !e.target.closest(".grip"))) return;
+e.preventDefault();
+const before = [...box.children], sy = e.clientY; let moved = false, auto = 0, lastY = sy;
+const place = y => { const next = [...box.children].find(o => o !== it && y < o.getBoundingClientRect().top + o.offsetHeight / 2);
+if (next) { if (it.nextElementSibling !== next) box.insertBefore(it, next); } else if (box.lastElementChild !== it) box.appendChild(it); };
+const edge = () => { const d = lastY < 70 ? -14 : lastY > innerHeight - 70 ? 14 : 0; if (d) { scrollBy(0, d); const sc = it.closest(".ed-form"); if (sc && sc.scrollHeight > sc.clientHeight) sc.scrollTop += d; place(lastY); } auto = requestAnimationFrame(edge); };
+const move = ev => { lastY = ev.clientY; if (!moved && Math.abs(lastY - sy) < 4) return;
+if (!moved) { moved = true; it.classList.add("dragging"); document.body.classList.add("sorting"); auto = requestAnimationFrame(edge); }
+ev.preventDefault(); place(lastY); };
+const end = () => { removeEventListener("pointermove", move); removeEventListener("pointerup", end); removeEventListener("pointercancel", end); cancelAnimationFrame(auto);
+it.classList.remove("dragging"); document.body.classList.remove("sorting");
+const order = [...box.children].map(o => before.indexOf(o)); if (moved && order.some((v, i) => v !== i)) done(order); };
+addEventListener("pointermove", move, { passive: false }); addEventListener("pointerup", end); addEventListener("pointercancel", end);
+});
+}
 const IMGL = [["gallery", "תמונות מהסרט", false], ["laurels", "פסטיבלים", true], ["partners", "תומכים ולוגואים", true]];
 function imgLists(f) {
 const m = M(f), he = edLang === "he", other = he ? "באנגלית" : "בעברית";
@@ -1192,12 +1226,12 @@ return IMGL.map(([k, label, mark]) => {
 const own = !!m[k + "He"], list = ML(f, k, edLang), still = ML(f, "trailerStill", edLang) || list[1] || list[0];
 const mode = he ? (own ? `<span>לעברית יש גרסה משלה.</span><button type="button" data-same="${k}">חזרה להיות כמו באנגלית</button>` : `<span>כרגע זהה לאנגלית.</span><button type="button" data-own="${k}">גרסה נפרדת לעברית</button>`)
 : (own ? `<span>לעברית יש גרסה נפרדת.</span>` : `<span>משותף לשתי השפות.</span>`);
-const tiles = list.map((id, i) => `<div class="it${mark ? " mk2" : ""}"><div class="ph"><img src="${img(id, 240)}" alt="" loading="lazy"></div>
-${k === "gallery" ? `<button type="button" class="star${id === key(f) ? " on" : ""}" data-key-img="${i}">${id === key(f) ? "תמונה ראשית ✓" : "קבע כתמונה ראשית"}</button>` : ""}
-${k === "gallery" && f.trailer ? `<button type="button" class="star${id === still ? " on" : ""}" data-still="${i}">${id === still ? "מעל הטריילר ✓" : "שים מעל הטריילר"}</button>` : ""}
-<span class="rt"><button type="button" data-iord="${k}" data-i="${i}" data-d="-1" title="קודם">${he ? "→" : "←"}</button><button type="button" data-iord="${k}" data-i="${i}" data-d="1" title="הבא">${he ? "←" : "→"}</button><button type="button" class="x" data-idel="${k}" data-i="${i}" title="מחק">×</button></span></div>`).join("");
+const tiles = list.map((id, i) => `<div class="irow si${mark ? " mk2" : ""}"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><div class="ph"><img src="${img(id, 240)}" alt="" loading="lazy" draggable="false"></div>
+<div class="acts">${k === "gallery" ? `<button type="button" class="star${id === key(f) ? " on" : ""}" data-key-img="${i}">${id === key(f) ? "תמונה ראשית ✓" : "קבע כתמונה ראשית"}</button>` : ""}
+${k === "gallery" && f.trailer ? `<button type="button" class="star${id === still ? " on" : ""}" data-still="${i}">${id === still ? "מעל הטריילר ✓" : "שים מעל הטריילר"}</button>` : ""}</div>
+<button type="button" class="x" data-idel="${k}" data-i="${i}" title="מחק">×</button></div>`).join("");
 return `<details class="more" data-list="${k}"><summary><span>${label} · ${list.length}</span><span class="plus">+</span></summary>
-<div class="lang-mode">${mode}</div><div class="itl">${tiles}</div>
+<div class="lang-mode">${mode}</div><div class="itl" data-sort-img="${k}">${tiles}</div>
 <div class="addimg">${getKey() ? `<label class="upbtn">העלאת תמונה<input type="file" accept="image/*" multiple hidden data-up="${k}"></label><span class="upmsg" id="upmsg-${k}"></span>` : `<span class="upmsg">כדי להעלות תמונות: לחבר מפתח בלשונית "עמוד הבית".</span>`}
 ${own ? `<label><input type="checkbox" id="both-${k}" checked> להוסיף גם ${other}</label>` : ""}</div></details>`;
 }).join("");
@@ -1206,7 +1240,7 @@ function bindImgLists(f, reopen) {
 const m = M(f), lk = k => edLang === "he" && m[k + "He"] ? k + "He" : k;
 document.querySelectorAll("[data-own]").forEach(b => b.onclick = () => { const k = b.dataset.own; m[k + "He"] = [...(m[k] || [])]; if (k === "gallery" && m.trailerStill) m.trailerStillHe = m.trailerStill; reopen(k); });
 document.querySelectorAll("[data-same]").forEach(b => b.onclick = () => { const k = b.dataset.same; delete m[k + "He"]; if (k === "gallery") delete m.trailerStillHe; reopen(k); });
-document.querySelectorAll("[data-iord]").forEach(b => b.onclick = () => { const k = b.dataset.iord, l = m[lk(k)], i = +b.dataset.i, j = i + +b.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; reopen(k); });
+document.querySelectorAll("[data-sort-img]").forEach(box => sortable(box, order => { const k = box.dataset.sortImg; reorder(m[lk(k)], order); reopen(k); }));
 document.querySelectorAll("[data-idel]").forEach(b => b.onclick = () => { const k = b.dataset.idel; m[lk(k)].splice(+b.dataset.i, 1); reopen(k); });
 document.querySelectorAll("[data-key-img]").forEach(b => b.onclick = () => { m.keyImage = m[lk("gallery")][+b.dataset.keyImg]; reopen("gallery"); });
 document.querySelectorAll("[data-still]").forEach(b => b.onclick = () => { m[edLang === "he" && m.galleryHe ? "trailerStillHe" : "trailerStill"] = m[lk("gallery")][+b.dataset.still]; reopen("gallery"); });
@@ -1271,19 +1305,19 @@ const g = k => esc(src(f, k, true)[k]);
 const opts = FILMS.map(x => `<option value="${x.slug}" ${x.slug === edSlug ? "selected" : ""}>${esc(x.title)}</option>`).join("");
 const lists = LISTS.map(([key, label, cols, perLang]) => {
 const arr = src(f, key, perLang)[key];
-const tools = i => `<span class="rt"><button class="mv2" data-ord="${key}" data-p="${perLang ? 1 : 0}" data-i="${i}" data-d="-1" title="למעלה">↑</button><button class="mv2" data-ord="${key}" data-p="${perLang ? 1 : 0}" data-i="${i}" data-d="1" title="למטה">↓</button><button class="x" data-del="${key}" data-p="${perLang ? 1 : 0}" data-i="${i}" title="מחק">×</button></span>`;
+const grip = `<span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span>`;
+const tools = i => `<button class="x" data-del="${key}" data-p="${perLang ? 1 : 0}" data-i="${i}" title="מחק">×</button>`;
 const inp = (v, i, j, c) => `<input class="${perLang && !(c || "").startsWith("קישור") ? dirCls : "ltr"}${j === 2 ? " wide" : ""}" id="${key}-${i}-${j}" data-k="${key}" data-p="${perLang ? 1 : 0}" data-i="${i}"${j === null ? "" : ` data-j="${j}"`} value="${esc(v)}" placeholder="${esc(c || "")}" aria-label="${esc(c || label)}">`;
 const rows = arr.map((v, i) => cols
-? `<div class="row">${cols.map((c, j) => inp(v[j] || "", i, j, c)).join("")}${tools(i)}</div>`
-: `<div class="row one">${inp(v, i, null)}${tools(i)}</div>`).join("");
+? `<div class="row si">${grip}${cols.map((c, j) => inp(v[j] || "", i, j, c)).join("")}${tools(i)}</div>`
+: `<div class="row one si">${grip}${inp(v, i, null)}${tools(i)}</div>`).join("");
 return `<details class="more" data-list="${key}"><summary><span>${label} · ${arr.length}${!perLang && he ? " <small>(משותף לשתי השפות)</small>" : ""}</span><span class="plus">+</span></summary>
-<div class="rows">${rows}<button class="add" data-add="${key}" data-p="${perLang ? 1 : 0}">הוסף שורה</button></div></details>`;
+<div class="rows"><div class="slist" data-sort="${key}" data-p="${perLang ? 1 : 0}">${rows}</div><button class="add" data-add="${key}" data-p="${perLang ? 1 : 0}">הוסף שורה</button></div></details>`;
 }).join("");
 return `<div class="ed">
 <aside class="ed-form">
 ${edTabs("edit")}
-${saveBar()}
-<div class="ed-top"><h2>עריכת עמוד סרט</h2><a class="btn" href="${routePath("f-" + f.slug, he ? "he" : "en")}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+${saveBar(routePath("f-" + f.slug, he ? "he" : "en"))}
 <div class="f"><label for="pick">סרט</label><select id="pick">${opts}</select></div>
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${he ? "on" : ""}">עברית</button><button data-lg="en" class="${he ? "" : "on"}">English</button></div>
 <div class="seg" role="group" aria-label="מצב"><button data-st="released" class="${f.status === "released" ? "on" : ""}">יצא</button><button data-st="production" class="${f.status === "production" ? "on" : ""}">בהפקה</button></div>
@@ -1334,7 +1368,7 @@ const key = b.dataset.add, two = LISTS.find(l => l[0] === key)[2];
 src(f, key, b.dataset.p === "1")[key].push(two ? two.map(() => "") : ""); reopen(key);
 });
 document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { src(f, b.dataset.del, b.dataset.p === "1")[b.dataset.del].splice(+b.dataset.i, 1); reopen(b.dataset.del); });
-document.querySelectorAll("[data-ord]").forEach(b => b.onclick = () => { const k = b.dataset.ord, l = src(f, k, b.dataset.p === "1")[k], i = +b.dataset.i, j = i + +b.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; reopen(k); });
+document.querySelectorAll("[data-sort]").forEach(box => sortable(box, order => { const k = box.dataset.sort; reorder(src(f, k, box.dataset.p === "1")[k], order); reopen(k); }));
 bindImgLists(f, reopen);
 }
 const ORIGIN = "https://uvsfilms.com";
@@ -1415,21 +1449,20 @@ return out;
 }
 function pageEditHome() {
 const off = k => (SITE.hide || {})[k] || [];
-const rows = (list, kind) => list.map(f => `<li class="srt${off(kind).includes(f.slug) ? " off" : ""}" draggable="true" data-slug="${f.slug}" data-list="${kind}"><span class="grip" aria-hidden="true">⋮⋮</span><img src="${img((kind === "poster" || kind === "films") && ML(f, "poster", edLang) ? ML(f, "poster", edLang) : key(f), 160)}" alt=""><span class="nm">${esc(L(f, "title"))}</span><button class="eye" data-eye title="${off(kind).includes(f.slug) ? "להציג" : "להסתיר"}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button><button class="mv" data-mv="-1" title="למעלה">↑</button><button class="mv" data-mv="1" title="למטה">↓</button></li>`).join("");
+const rows = (list, kind) => list.map(f => `<li class="srt si${off(kind).includes(f.slug) ? " off" : ""}" data-slug="${f.slug}" data-list="${kind}"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><img draggable="false" src="${img((kind === "poster" || kind === "films") && ML(f, "poster", edLang) ? ML(f, "poster", edLang) : key(f), 160)}" alt=""><span class="nm">${esc(L(f, "title"))}</span><button class="eye" data-eye title="${off(kind).includes(f.slug) ? "להציג" : "להסתיר"}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button></li>`).join("");
 const block = (k, label) => `<details class="more" data-pv="${k}"${k === "slide" ? " open" : ""}><summary><span>${label}</span><span class="plus">+</span></summary><ul class="sortable" data-key="${k}">${rows(listAll(k), k)}</ul></details>`;
 const mode = SITE.posterRows || "auto";
 return `<div class="ed">
 <aside class="ed-form">
 ${edTabs("edit-home")}
-${saveBar()}
-<div class="ed-top"><h2>עמוד הבית</h2><a class="btn" href="/" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+${saveBar(routePath("home", edLang))}
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${edLang === "he" ? "on" : ""}">עברית</button><button data-lg="en" class="${edLang === "he" ? "" : "on"}">English</button></div>
 ${block("slide", "עמוד הבית · הגלריה המתחלפת")}
 ${block("poster", "עמוד הבית · שורת הפוסטרים")}
 ${block("films", "עמוד סרטים")}
 ${block("prod", "עמוד בהפקה")}
 <div class="f"><label>צבע הדגשה של עמוד הבית</label><div class="swatches"><button type="button" class="eyedrop" id="eyedrop" title="לוחצים, ואז על כל נקודה בעמוד"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5l5 5M17 2.5a2.1 2.1 0 0 1 3 3l-2.5 2.5-3-3zM14.5 5L5 14.5V19h4.5L19 9.5"/></svg>דגימה מהעמוד</button><input type="color" id="color" value="${/^#[0-9a-f]{6}$/i.test(SITE.homeColor || "") ? SITE.homeColor : "#e2c48f"}" aria-label="בחירת צבע"></div></div>
-<div class="note">גוררים שורה או לוחצים על החצים. העין מסתירה סרט מהמקום הזה בלבד.</div>
+<div class="note">גוררים שורה כדי לשנות את הסדר. העין מסתירה סרט מהמקום הזה בלבד.</div>
 ${keyBox()}
 </aside>
 <section class="ed-preview"><div class="tag"><span id="pvname">תצוגה חיה · עמוד הבית</span><i>מתעדכן מיד</i></div><div id="live" dir="${edLang === "he" ? "rtl" : "ltr"}"></div></section>
@@ -1447,18 +1480,17 @@ ${fld("שם", `${S}.people.${i}.name`)}${fld("טקסט", `${S}.people.${i}.bio`,
 return `<div class="ed">
 <aside class="ed-form">
 ${edTabs("edit-bio")}
-${saveBar()}
-<div class="ed-top"><h2>אודות וקשר</h2><a class="btn" href="${routePath("bio", edLang)}" style="font-family:var(--he);letter-spacing:0">חזרה לאתר</a></div>
+${saveBar(routePath("bio", edLang))}
 <div class="seg" role="group" aria-label="שפה"><button data-lg="he" class="${he ? "on" : ""}">עברית</button><button data-lg="en" class="${he ? "" : "on"}">English</button></div>
 ${fld("משפט פתיחה", `${S}.tagline`, 70)}
 ${he ? fld("שם החברה", "SITE_HE.company") : ""}
 ${fld("טלפון", `${S}.phone`, 0, "ltr")}
 ${sp.map(person).join("")}
 <details class="more"><summary><span>כתובות מייל · ${SITE.emails.length} <small>(משותף לשתי השפות)</small></span><span class="plus">+</span></summary><div class="rows">
-${SITE.emails.map((e, i) => `<div class="row one"><input class="ltr" data-path="SITE.emails.${i}" value="${esc(e)}"><span class="rt"><button class="x" data-ldel="SITE.emails" data-i="${i}" title="מחק">×</button></span></div>`).join("")}
+<div class="slist" data-lsort="SITE.emails">${SITE.emails.map((e, i) => `<div class="row one si"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><input class="ltr" data-path="SITE.emails.${i}" value="${esc(e)}"><button class="x" data-ldel="SITE.emails" data-i="${i}" title="מחק">×</button></div>`).join("")}</div>
 <button class="add" data-ladd="SITE.emails">הוסף שורה</button></div></details>
 <details class="more"><summary><span>רשתות חברתיות · ${SITE.social.length} <small>(משותף לשתי השפות)</small></span><span class="plus">+</span></summary><div class="rows">
-${SITE.social.map((x, i) => `<div class="row"><input class="ltr" data-path="SITE.social.${i}.0" value="${esc(x[0])}"><input class="ltr wide" data-path="SITE.social.${i}.1" value="${esc(x[1])}"><span class="rt"><button class="x" data-ldel="SITE.social" data-i="${i}" title="מחק">×</button></span></div>`).join("")}
+<div class="slist" data-lsort="SITE.social">${SITE.social.map((x, i) => `<div class="row si"><span class="grip" title="גוררים לשינוי הסדר">⋮⋮</span><input class="ltr" data-path="SITE.social.${i}.0" value="${esc(x[0])}"><input class="ltr" data-path="SITE.social.${i}.1" value="${esc(x[1])}"><button class="x" data-ldel="SITE.social" data-i="${i}" title="מחק">×</button></div>`).join("")}</div>
 <button class="add" data-ladd="SITE.social" data-pair="1">הוסף שורה</button></div></details>
 </aside>
 <section class="ed-preview"><div class="tag"><span>תצוגה חיה · אודות</span><i>מתעדכן תוך כדי הקלדה</i></div><div id="live" dir="${dir}"></div></section>
@@ -1473,6 +1505,7 @@ document.querySelectorAll("[data-path]").forEach(el => el.oninput = () => { setP
 const reopen = k => { render(); const d = document.querySelector(`[data-ladd="${k}"]`); if (d) d.closest("details").open = true; };
 document.querySelectorAll("[data-ladd]").forEach(b => b.onclick = () => { getPath(b.dataset.ladd).push(b.dataset.pair ? ["", ""] : ""); reopen(b.dataset.ladd); });
 document.querySelectorAll("[data-ldel]").forEach(b => b.onclick = () => { getPath(b.dataset.ldel).splice(+b.dataset.i, 1); reopen(b.dataset.ldel); });
+document.querySelectorAll("[data-lsort]").forEach(box => sortable(box, order => { reorder(getPath(box.dataset.lsort), order); reopen(box.dataset.lsort); }));
 document.querySelectorAll("[data-portrait]").forEach(inp => inp.onchange = async () => { const i = +inp.dataset.portrait, msg = $("#pmsg-" + i); if (!inp.files.length) return;
 try { const [id] = await uploadImages([inp.files[0]], msg); SITE_MEDIA.portraits[i] = id; render(); } catch (e) { msg.textContent = "ההעלאה נכשלה (" + e.message + ")"; } });
 }
@@ -1501,9 +1534,7 @@ await ghApi("git/refs/heads/main", { method: "PATCH", body: JSON.stringify({ sha
 try { localStorage.setItem("uvsPending", full); } catch (e) {}
 savedSnap = body;
 }
-const saveBar = () => getKey()
-? `<div class="savebar"><button type="button" class="btn solid" id="saveBtn">שמירה</button><span id="saveMsg"></span></div>`
-: `<div class="savebar"><span class="muted">כדי לשמור: לחבר מפתח בלשונית "עמוד הבית", למטה.</span></div>`;
+const saveBar = back => `<div class="savebar">${getKey() ? `<button type="button" class="eb solid" id="saveBtn">שמירה</button>` : ""}<a class="eb" href="${back}">חזרה לאתר</a>${getKey() ? `<span id="saveMsg"></span>` : `<span class="muted">כדי לשמור: לחבר מפתח בלשונית "עמוד הבית", למטה.</span>`}</div>`;
 let dirtyTimer;
 function bindSave() {
 const b = $("#saveBtn"), msg = $("#saveMsg"); clearInterval(dirtyTimer); if (!b) return;
@@ -1586,16 +1617,9 @@ const save = ul => { const k = ul.dataset.key; SITE[LISTDEF[k][0]] = [...ul.chil
 document.querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { edLang = b.dataset.lg; render(); });
 document.querySelectorAll("[data-rows]").forEach(b => b.onclick = () => { SITE.posterRows = b.dataset.rows; document.querySelectorAll("[data-rows]").forEach(x => x.classList.toggle("on", x === b)); redraw(); });
 document.querySelectorAll(".sortable").forEach(ul => {
-let drag = null;
-ul.addEventListener("dragstart", e => { drag = e.target.closest(".srt"); drag.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
-ul.addEventListener("dragend", () => { if (drag) drag.classList.remove("dragging"); drag = null; save(ul); });
-ul.addEventListener("dragover", e => { e.preventDefault(); const over = e.target.closest(".srt"); if (!drag || !over || over === drag || over.parentNode !== ul) return;
-const r = over.getBoundingClientRect(); ul.insertBefore(drag, e.clientY > r.top + r.height / 2 ? over.nextSibling : over); });
+sortable(ul, () => save(ul));
 ul.addEventListener("click", e => { const eye = e.target.closest("[data-eye]"); if (eye) { const li = eye.closest(".srt"), k = ul.dataset.key; SITE.hide = SITE.hide || {}; const list = SITE.hide[k] = SITE.hide[k] || [];
-const i = list.indexOf(li.dataset.slug); if (i >= 0) list.splice(i, 1); else list.push(li.dataset.slug); li.classList.toggle("off", i < 0); eye.title = i < 0 ? "להציג" : "להסתיר"; save(ul); return; }
-const b = e.target.closest(".mv"); if (!b) return; const li = b.closest(".srt");
-if (b.dataset.mv === "-1" && li.previousElementSibling) ul.insertBefore(li, li.previousElementSibling);
-if (b.dataset.mv === "1" && li.nextElementSibling) ul.insertBefore(li.nextElementSibling, li); save(ul); });
+const i = list.indexOf(li.dataset.slug); if (i >= 0) list.splice(i, 1); else list.push(li.dataset.slug); li.classList.toggle("off", i < 0); eye.title = i < 0 ? "להציג" : "להסתיר"; save(ul); } });
 });
 }
 let EDITOR = (() => { let on = false; try { if (/^#(he-)?edit/.test(location.hash) || /[?&]edit\b/.test(location.search)) localStorage.setItem("uvsEditor", "1"); on = localStorage.getItem("uvsEditor") === "1"; } catch (e) { on = /^#(he-)?edit/.test(location.hash); } return on; })();
