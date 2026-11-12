@@ -316,6 +316,7 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .tplay:focus-visible{outline:none}
 .strip{position:relative;direction:ltr;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .strip::-webkit-scrollbar{display:none}
+@media (hover:none){.strip{-webkit-mask-image:none;mask-image:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}}
 .strack{display:flex;gap:12px;width:max-content;padding-block:8px}
 .strip.still{-webkit-mask-image:none;mask-image:none}
 .strip.still .strack{margin-inline:auto}
@@ -326,16 +327,17 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .pr img{width:100%;height:auto;display:block;transition:box-shadow .35s}
 .pr .pf{display:block;aspect-ratio:2/3;position:relative;overflow:hidden}
 .pr .pf img{position:absolute;inset:0;height:100%;object-fit:cover}
-.prow:hover .pr{opacity:.55}
-.prow .pr:hover{opacity:1;transform:scale(1.12);z-index:2}
-.pr:hover img{box-shadow:0 0 0 2px var(--accent),0 18px 40px rgba(0,0,0,.6)}
+@media (hover:hover){.prow:hover .pr{opacity:.55}
+.prow .pr:hover{opacity:1;transform:scale(1.34);z-index:2}}
+.prow .pr:first-child{transform-origin:0 100%}.prow .pr:last-child{transform-origin:100% 100%}
+[dir=rtl] .prow .pr:first-child{transform-origin:100% 100%}[dir=rtl] .prow .pr:last-child{transform-origin:0 100%}
 .pr .pst{font-size:13px;max-width:none}
 @media (max-width:700px){.prow{display:grid;grid-template-columns:1fr 1fr;gap:26px 16px}.pr{flex:none!important}.prow .pr:hover{transform:none}.prow:hover .pr{opacity:1}.prow .pr:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 8px);justify-self:center}}
 .ps{display:grid;gap:6px;flex:none;text-decoration:none;color:inherit}
 .ps img{height:clamp(240px,26vw,340px);width:auto;display:block;transition:transform .35s ease,box-shadow .35s}
 .ps .pf{position:relative;display:block;height:clamp(240px,26vw,340px);aspect-ratio:2/3;overflow:hidden}
 .ps .pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ps:hover>img,.ps:hover .pf{transform:translateY(-3px);box-shadow:0 0 0 2px var(--accent)}
+@media (hover:hover){.ps:hover>img,.ps:hover .pf{transform:translateY(-3px)}}
 .pst{font:600 14px/1.2 var(--display);margin-top:4px;max-width:22ch}
 .pst:dir(rtl){font-family:var(--he)}
 .psy{font:400 12px/1 var(--mono);color:var(--muted)}
@@ -345,7 +347,7 @@ body.sampling #live,body.sampling #live *{cursor:crosshair!important}
 .ic:hover{background:var(--accent);color:var(--accent-ink)}
 .sh{position:relative;flex:none;width:clamp(170px,21vw,250px);aspect-ratio:3/2;overflow:hidden;padding:0;border:0;background:#0c0d0f;cursor:zoom-in}
 .sh img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease,filter .3s;filter:brightness(.82)}
-.sh:hover img,.sh:focus-visible img{transform:scale(1.06);filter:brightness(1)}
+@media (hover:hover){.sh:hover img{transform:scale(1.06);filter:brightness(1)}}.sh:focus-visible img{filter:brightness(1)}
 .lbx{position:fixed;inset:0;z-index:20;background:rgba(8,8,10,.94);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .lbx img{max-width:100%;max-height:100%;object-fit:contain}
 .lbx button{position:absolute;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font:500 20px/1 var(--mono);cursor:pointer}
@@ -938,7 +940,8 @@ function startGallery(root = document) {
 cancelAnimationFrame(gtimer);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, base = reduce ? 0 : .35;
 const all = [...root.querySelectorAll(".strip")].map(st => {
-const o = { st, track: st.querySelector(".strack"), v: base, target: base, pos: st.scrollLeft, hold: 0 };
+const o = { st, track: st.querySelector(".strack"), v: base, target: base, pos: st.scrollLeft, hold: 0, userAt: 0 };
+st.addEventListener("scroll", () => { if (Math.abs(st.scrollLeft - o.pos) > 1.5) o.userAt = performance.now(); }, { passive: true });
 st.onmousemove = e => { if (o.drag || innerWidth <= 700) return; const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; o.target = Math.abs(x) < .12 ? 0 : x * 9; };
 st.onpointerdown = e => { if (e.pointerType !== "mouse" || e.button) return; o.drag = { x: e.clientX, s: st.scrollLeft, moved: 0 }; o.hold = 1; o.target = 0; };
 addEventListener("pointermove", e => { if (!o.drag) return; const dx = e.clientX - o.drag.x; if (Math.abs(dx) > 4) o.drag.moved = 1; st.scrollLeft = o.drag.s - dx; o.pos = st.scrollLeft; });
@@ -946,7 +949,7 @@ addEventListener("pointerup", () => { if (!o.drag) return; const moved = o.drag.
 st.addEventListener("click", e => { if (o.justDragged) { e.preventDefault(); e.stopPropagation(); } }, true);
 st.addEventListener("dragstart", e => e.preventDefault());
 st.onmouseleave = () => { o.target = base; };
-st.addEventListener("touchstart", () => { o.hold = 1; o.target = 0; }, { passive: true });
+st.addEventListener("touchstart", () => { o.hold = 1; o.target = 0; o.v = 0; o.userAt = performance.now(); }, { passive: true });
 st.addEventListener("touchend", () => { o.hold = 0; o.pos = st.scrollLeft; setTimeout(() => { if (!o.hold) o.target = base; }, 2500); }, { passive: true });
 return o; });
 if (!all.length) return;
@@ -956,6 +959,7 @@ const dt = Math.min(48, now - last) / 16.7; last = now;
 all.forEach(o => { if (o.drag) return; const items = o.track.children, n = items.length / 2, a = items[0], b2 = items[n - 1];
 const half = n && b2 ? (items[n] && items[n].offsetWidth ? items[n].offsetLeft - a.offsetLeft : b2.offsetLeft + b2.offsetWidth - a.offsetLeft + 12) : 0, still = half <= o.st.clientWidth + 2;
 o.st.classList.toggle("still", still); if (still) return;
+if (o.hold || now - o.userAt < 1800) { o.v = 0; o.pos = o.st.scrollLeft; return; }
 o.v += (o.target - o.v) * .06 * dt;
 if (!o.hold && Math.abs(o.v) > .01) { o.pos += o.v * dt; if (o.pos >= half) o.pos -= half; if (o.pos < 0) o.pos += half; o.st.scrollLeft = o.pos; } else o.pos = o.st.scrollLeft; });
 gtimer = requestAnimationFrame(step);
@@ -1002,7 +1006,7 @@ const box = b.closest(".trailer-box");
 box.innerHTML = `<iframe src="https://player.vimeo.com/video/${encodeURIComponent(box.dataset.v)}?autoplay=1&dnt=1&title=0&byline=0&portrait=0" title="trailer" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
 }
 document.addEventListener("click", e => { const b = e.target.closest(".tplay"); if (b) playTrailer(b); });
-const key = f => M(f).gallery[0] || M(f).poster;
+const key = f => { const m = M(f); return (m.keyImage && (m.gallery || []).concat(m.galleryHe || []).includes(m.keyImage) && m.keyImage) || (m.gallery || [])[0] || m.poster; };
 function frame(ratio, cap, tc, inner = "", id = "", w = 1600, eager = false) {
 const pic = id ? `<img src="${img(id, w)}"${tr(id)} alt="" ${eager ? "" : `loading="lazy"`} decoding="async">` : "";
 return `<div class="frame ${ratio}${id ? " has-img" : ""}">${pic}${inner}${!id && tc ? `<span class="tc">${esc(tc)}</span>` : ""}${!id ? `<span class="cap">${esc(cap)}</span>` : ""}</div>`;
@@ -1183,6 +1187,7 @@ const own = !!m[k + "He"], list = ML(f, k, edLang), still = ML(f, "trailerStill"
 const mode = he ? (own ? `<span>לעברית יש גרסה משלה.</span><button type="button" data-same="${k}">חזרה להיות כמו באנגלית</button>` : `<span>כרגע זהה לאנגלית.</span><button type="button" data-own="${k}">גרסה נפרדת לעברית</button>`)
 : (own ? `<span>לעברית יש גרסה נפרדת.</span>` : `<span>משותף לשתי השפות.</span>`);
 const tiles = list.map((id, i) => `<div class="it${mark ? " mk2" : ""}"><div class="ph"><img src="${img(id, 240)}" alt="" loading="lazy"></div>
+${k === "gallery" ? `<button type="button" class="star${id === key(f) ? " on" : ""}" data-key-img="${i}">${id === key(f) ? "תמונה ראשית ✓" : "קבע כתמונה ראשית"}</button>` : ""}
 ${k === "gallery" && f.trailer ? `<button type="button" class="star${id === still ? " on" : ""}" data-still="${i}">${id === still ? "מעל הטריילר ✓" : "שים מעל הטריילר"}</button>` : ""}
 <span class="rt"><button type="button" data-iord="${k}" data-i="${i}" data-d="-1" title="קודם">${he ? "→" : "←"}</button><button type="button" data-iord="${k}" data-i="${i}" data-d="1" title="הבא">${he ? "←" : "→"}</button><button type="button" class="x" data-idel="${k}" data-i="${i}" title="מחק">×</button></span></div>`).join("");
 return `<details class="more" data-list="${k}"><summary><span>${label} · ${list.length}</span><span class="plus">+</span></summary>
@@ -1197,6 +1202,7 @@ document.querySelectorAll("[data-own]").forEach(b => b.onclick = () => { const k
 document.querySelectorAll("[data-same]").forEach(b => b.onclick = () => { const k = b.dataset.same; delete m[k + "He"]; if (k === "gallery") delete m.trailerStillHe; reopen(k); });
 document.querySelectorAll("[data-iord]").forEach(b => b.onclick = () => { const k = b.dataset.iord, l = m[lk(k)], i = +b.dataset.i, j = i + +b.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; reopen(k); });
 document.querySelectorAll("[data-idel]").forEach(b => b.onclick = () => { const k = b.dataset.idel; m[lk(k)].splice(+b.dataset.i, 1); reopen(k); });
+document.querySelectorAll("[data-key-img]").forEach(b => b.onclick = () => { m.keyImage = m[lk("gallery")][+b.dataset.keyImg]; reopen("gallery"); });
 document.querySelectorAll("[data-still]").forEach(b => b.onclick = () => { m[edLang === "he" && m.galleryHe ? "trailerStillHe" : "trailerStill"] = m[lk("gallery")][+b.dataset.still]; reopen("gallery"); });
 document.querySelectorAll("[data-up]").forEach(inp => inp.onchange = async () => { const k = inp.dataset.up, msg = $("#upmsg-" + k); if (!inp.files.length) return;
 try { const ids = await uploadImages(inp.files, msg); const both = $("#both-" + k);
