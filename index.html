@@ -936,32 +936,38 @@ Object.assign(im.style, { width: iw + "px", height: ih + "px", left: -fx * iw + 
 });
 }
 let gtimer = 0;
+/* moving strips (home posters, film galleries): every item appears once; the strip glides to one end, then turns back.
+Mouse: hover steers (desktop), drag moves. Touch: plain swipe; the glide pauses while the finger or the momentum moves it. */
 function startGallery(root = document) {
 cancelAnimationFrame(gtimer);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, base = reduce ? 0 : .35;
 const all = [...root.querySelectorAll(".strip")].map(st => {
-const o = { st, track: st.querySelector(".strack"), v: base, target: base, pos: st.scrollLeft, hold: 0, userAt: 0 };
+const o = { st, dir: st.dataset.start === "end" ? -1 : 1, v: 0, target: 0, pos: 0, hold: 0, userAt: 0, steer: 0, started: 0 };
+o.target = base * o.dir;
 st.addEventListener("scroll", () => { if (Math.abs(st.scrollLeft - o.pos) > 1.5) o.userAt = performance.now(); }, { passive: true });
-st.onmousemove = e => { if (o.drag || innerWidth <= 700) return; const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; o.target = Math.abs(x) < .12 ? 0 : x * 9; };
+st.onmousemove = e => { if (o.drag || innerWidth <= 700) return; const r = st.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5; o.steer = 1; o.target = Math.abs(x) < .12 ? 0 : x * 9; };
 st.onpointerdown = e => { if (e.pointerType !== "mouse" || e.button) return; o.drag = { x: e.clientX, s: st.scrollLeft, moved: 0 }; o.hold = 1; o.target = 0; };
 addEventListener("pointermove", e => { if (!o.drag) return; const dx = e.clientX - o.drag.x; if (Math.abs(dx) > 4) o.drag.moved = 1; st.scrollLeft = o.drag.s - dx; o.pos = st.scrollLeft; });
-addEventListener("pointerup", () => { if (!o.drag) return; const moved = o.drag.moved; setTimeout(() => { o.drag = null; }, 0); o.hold = 0; o.pos = st.scrollLeft; if (innerWidth > 700) o.target = base; o.justDragged = moved; setTimeout(() => o.justDragged = 0, 50); });
+addEventListener("pointerup", () => { if (!o.drag) return; const moved = o.drag.moved; setTimeout(() => { o.drag = null; }, 0); o.hold = 0; o.pos = st.scrollLeft; if (innerWidth > 700) o.target = o.steer ? 0 : base * o.dir; o.justDragged = moved; setTimeout(() => o.justDragged = 0, 50); });
 st.addEventListener("click", e => { if (o.justDragged) { e.preventDefault(); e.stopPropagation(); } }, true);
 st.addEventListener("dragstart", e => e.preventDefault());
-st.onmouseleave = () => { o.target = base; };
+st.onmouseleave = () => { o.steer = 0; o.target = base * o.dir; };
 st.addEventListener("touchstart", () => { o.hold = 1; o.target = 0; o.v = 0; o.userAt = performance.now(); }, { passive: true });
-st.addEventListener("touchend", () => { o.hold = 0; o.pos = st.scrollLeft; setTimeout(() => { if (!o.hold) o.target = base; }, 2500); }, { passive: true });
+st.addEventListener("touchend", () => { o.hold = 0; o.pos = st.scrollLeft; setTimeout(() => { if (!o.hold) o.target = base * o.dir; }, 2500); }, { passive: true });
 return o; });
 if (!all.length) return;
 let last = performance.now();
 const step = now => {
 const dt = Math.min(48, now - last) / 16.7; last = now;
-all.forEach(o => { if (o.drag) return; const items = o.track.children, n = items.length / 2, a = items[0], b2 = items[n - 1];
-const half = n && b2 ? (items[n] && items[n].offsetWidth ? items[n].offsetLeft - a.offsetLeft : b2.offsetLeft + b2.offsetWidth - a.offsetLeft + 12) : 0, still = half <= o.st.clientWidth + 2;
+all.forEach(o => { if (o.drag) return; const max = o.st.scrollWidth - o.st.clientWidth, still = max <= 2;
 o.st.classList.toggle("still", still); if (still) return;
+if (!o.started && o.st.clientWidth) { o.started = 1; if (o.dir < 0) o.st.scrollLeft = max; o.pos = o.st.scrollLeft; }
 if (o.hold || now - o.userAt < 1800) { o.v = 0; o.pos = o.st.scrollLeft; return; }
+if (!o.steer && !o.hold && o.target !== 0 && Math.sign(o.target) !== o.dir) o.target = base * o.dir;
 o.v += (o.target - o.v) * .06 * dt;
-if (!o.hold && Math.abs(o.v) > .01) { o.pos += o.v * dt; if (o.pos >= half) o.pos -= half; if (o.pos < 0) o.pos += half; o.st.scrollLeft = o.pos; } else o.pos = o.st.scrollLeft; });
+if (Math.abs(o.v) > .01) { o.pos = Math.min(max, Math.max(0, o.pos + o.v * dt)); o.st.scrollLeft = o.pos;
+if (!o.steer && ((o.pos >= max - .5 && o.dir > 0) || (o.pos <= .5 && o.dir < 0))) { o.dir = -o.dir; o.target = base * o.dir; o.v = 0; } }
+else o.pos = o.st.scrollLeft; });
 gtimer = requestAnimationFrame(step);
 };
 gtimer = requestAnimationFrame(step);
@@ -1031,7 +1037,7 @@ const one = (f, dup) => `<a class="ps" dir="${lang === "he" ? "rtl" : "ltr"}" hr
 ${ML(f, "poster") ? `<img src="${img(ML(f, "poster"), 700)}" alt="${esc(L(f, "title"))}" loading="lazy">` : `<span class="pf"><img src="${img(key(f), 700)}"${tr(key(f))} alt="${esc(L(f, "title"))}" loading="lazy"></span>`}
 <span class="pst">${esc(L(f, "title"))}</span><span class="psy">${f.year}</span></a>`;
 if (lang === "he") list = [...list].reverse(); /* the strip runs left-to-right; in Hebrew the first poster sits on the right */
-return `<div class="strip pstrip"><div class="strack">${list.map(f => one(f)).join("")}${list.map(f => one(f, 1)).join("")}</div></div>`;
+return `<div class="strip pstrip"${lang === "he" ? ' data-start="end"' : ""}><div class="strack">${list.map(f => one(f)).join("")}</div></div>`;
 }
 function posterCard(f) {
 return `<a class="poster" href="${R("f-" + f.slug)}" style="${tint(f)}">
@@ -1127,7 +1133,7 @@ const laurels = laurelIds.length ? `<section class="section laurels-band"><div c
 const partners = partnerIds.length ? `<section class="section"><h3>${t("supported")}</h3><div class="marks logos" data-kind="logo">${partnerIds.map((id, i) => mark(id, partnerIds === media.partners ? f.partners[i] : "")).join("")}</div></section>` : "";
 const still = ML(f, "trailerStill") || gal[1] || gal[0] || key(f);
 const trailer = f.trailer ? `<section class="section"><div class="trailer-box" data-v="${esc(f.trailer)}">${still ? `<img src="${img(still, 2000)}"${tr(still)} alt="" loading="lazy">` : ""}<button class="tplay" type="button" aria-label="${esc(t("trailer").replace("▶ ", ""))}"><span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a.6.6 0 0 0 .9.5l12-7.5a.6.6 0 0 0 0-1L7.9 4a.6.6 0 0 0-.9.5z"/></svg></span><span class="lbl">${esc(t("trailer").replace("▶ ", ""))}</span></button></div></section>` : "";
-const shots = gal.length > 1 ? [...gal, ...gal].map((id, i) => `<button class="sh" type="button" data-i="${i % gal.length}"${i >= gal.length ? ` aria-hidden="true" tabindex="-1"` : ""}><img src="${img(id, 700)}"${tr(id)} alt="" loading="lazy"></button>`).join("") : "";
+const shots = gal.length > 1 ? gal.map((id, i) => `<button class="sh" type="button" data-i="${i}"><img src="${img(id, 700)}"${tr(id)} alt="" loading="lazy"></button>`).join("") : "";
 const gallery = gal.length > 1 ? `<section class="section${f.trailer ? " media" : ""}"><div class="strip" data-ids="${gal.join("|")}"><div class="strack">${shots}</div></div></section>` : "";
 return `<div class="film" style="${tint(f)}"><section class="film-hero">
 ${key(f) ? `<img class="bg" src="${img(key(f), 2400)}"${tr(key(f))} alt="">` : ""}
