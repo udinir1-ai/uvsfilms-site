@@ -877,8 +877,26 @@ p.src = img(id, 600);
 });
 }
 const LOGO_MIN_PHONE = .62; /* phone logo size Udi approved (It Is What It Is) — every film uses this size on phones */
+/* laurels and logos that were uploaded later have no measured outline yet: measure the drawing itself (its edges and how much of it is ink)
+so a new laurel gets the same size as the others instead of shrinking inside its own empty margins */
+const BOXING = {}, boxKey = id => id.replace("f84179_", "").replace(/~mv2.*$/, "");
+function measureMarks(root) {
+root.querySelectorAll(".marks .mk[data-id]").forEach(el => {
+const id = el.dataset.id, k = boxKey(id); if (BOX[k] || BOXING[k]) return; BOXING[k] = 1;
+const p = new Image();
+p.onload = () => { const W = p.naturalWidth, H = p.naturalHeight; let b = [0, 0, 1, 1, .25, W / H || 1];
+try { const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(p, 0, 0);
+const d = x.getImageData(0, 0, W, H).data; let x0 = W, y0 = H, x1 = -1, y1 = -1, ink = 0, clear = 0;
+for (let y = 0; y < H; y++) for (let X = 0; X < W; X++) { const a = d[(y * W + X) * 4 + 3]; if (a < 40) { clear++; continue; } ink++; if (X < x0) x0 = X; if (X > x1) x1 = X; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+if (x1 >= 0 && clear > W * H * .03) { const bw = x1 - x0 + 1, bh = y1 - y0 + 1; b = [x0 / W, y0 / H, bw / W, bh / H, ink / (bw * bh), W / H]; }
+} catch (e) {}
+BOX[k] = b; if (root.isConnected === false) return; layoutMarks(root); };
+p.onerror = () => { BOX[k] = [0, 0, 1, 1, .25, 1]; };
+p.src = img(id, 600);
+});
+}
 function layoutMarks(root = document) {
-toneMarks(root);
+toneMarks(root); measureMarks(root);
 root.querySelectorAll(".marks").forEach(box => {
 const logo = box.dataset.kind === "logo";
 const A = logo ? 3000 : 8200, maxH = logo ? 46 : 92, maxW = logo ? 170 : 220;
