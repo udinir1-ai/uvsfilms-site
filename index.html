@@ -813,13 +813,13 @@ const m = p.match(/^\/films\/([\w-]+)\/?$/); const name = m ? "f-" + m[1] : p.re
 return (he ? "he-" : "") + (["home", "films", "in-production", "bio"].includes(name) || name.startsWith("f-") ? name : "home"); };
 const T = {
 en: { home:"Home", films:"Films", prod:"In Production", bio:"Bio & Contact", switchTo:"עברית",
-newFilm:"New film", inProd:"In production", doc:"Documentary", about:"About the film", projects:"Our projects",
+newFilm:"New film", inProd:"In production", doc:"Documentary", min:"min", about:"About the film", projects:"Our projects",
 screenings:"Upcoming screenings", allFilms:"All films", qa:"Q&A", tickets:"Tickets", example:"EXAMPLE", noScreen:"No screenings scheduled right now.", news:"Sign up for our newsletter to get updates on screenings and Q&As", watch:"Where to watch",
 fromCV:"Screening dates appear here automatically from CineVerse.", festivals:"Festivals & awards", supported:"Supported by",
 team:"Team", tech:"Technical details", pitching:"Pitching events", links:"Links", trailer:"▶ Watch trailer", contact:"Contact",
 prev:"Previous", next:"Next", months:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] },
 he: { home:"בית", films:"סרטים", prod:"בהפקה", bio:"אודות", switchTo:"English",
-newFilm:"סרט חדש", inProd:"בהפקה", doc:"סרט תיעודי", about:"על הסרט", projects:"הפרויקטים שלנו",
+newFilm:"סרט חדש", inProd:"בהפקה", doc:"תיעודי", min:"דקות", about:"על הסרט", projects:"הפרויקטים שלנו",
 screenings:"הקרנות קרובות", allFilms:"כל הסרטים", qa:"מפגש עם היוצרים", tickets:"כרטיסים", example:"דוגמה", noScreen:"אין הקרנות מתוכננות כרגע.", news:"הירשמו לניוזלטר שלנו לקבלת התראות על הקרנות ומפגשים", watch:"זמין לצפייה",
 fromCV:"מועדי ההקרנות יופיעו כאן אוטומטית מסינברס.", festivals:"פסטיבלים ופרסים", supported:"בתמיכת",
 team:"צוות", tech:"פרטים טכניים", pitching:"אירועי פיצ'ינג", links:"קישורים", trailer:"▶ לצפייה בטריילר", contact:"יצירת קשר",
@@ -1147,11 +1147,15 @@ ${showFilm ? `<a class="t" href="${R("f-" + f.slug)}">${esc(L(f, "title"))}</a>`
 </li>`; }).join("")}</ul>`;
 }
 const upcoming = () => SCREENINGS.filter(s => new Date(s.date + "T23:59:59") >= new Date()).sort((a, b) => a.date.localeCompare(b.date));
+/* the line above a film's title, the same on its page and on the home page (from the film's year and length):
+   documentary / year / minutes; a film in production: documentary / minutes / in production */
+const eyebrow = f => { const n = (String(L(f, "runtime") || f.runtime || "").match(/\d+/) || [])[0], mins = n ? `${n} ${t("min")}` : "";
+  return (f.status === "production" ? [t("doc"), mins, t("inProd")] : [t("doc"), f.year, mins]).filter(Boolean).map(x => esc(String(x))).join(" / "); };
 function pageHome() {
 const all = slideList(), up = upcoming();
 const slides = all.map((f, i) => `<div class="slide ${i ? "" : "on"}" data-i="${i}">
 ${frame("r169", "KEY IMAGE", "", "", key(f), 2000, i === 0)}
-<div class="over"><div class="eyebrow">${f.status === "production" ? t("inProd") : (i === all.findIndex(x => x.status === "released") ? t("newFilm") : t("doc"))} · ${f.year}</div>
+<div class="over"><div class="eyebrow">${eyebrow(f)}</div>
 <h1>${esc(L(f, "title"))}</h1><p class="lede">${esc(L(f, "logline"))}</p>
 <div><a class="btn solid" href="${R("f-" + f.slug)}">${t("about")}</a></div></div></div>`).join("");
 return `<div class="wrap">
@@ -1196,11 +1200,11 @@ return `<div class="film" style="${tint(f)}"><section class="film-hero">
 ${key(f) ? `<img class="bg" src="${img(key(f), 2400)}"${tr(key(f))} alt="">` : ""}
 <div class="wrap hero-in">
 <div class="hero-text">
-<div class="eyebrow">${f.status === "production" ? t("inProd") : t("doc")} · ${f.year}</div>
+<div class="eyebrow">${eyebrow(f)}</div>
 <h1>${esc(L(f, "title"))}</h1>
 ${L(f, "byline") ? `<div class="meta"><span>${esc(L(f, "byline"))}</span></div>` : ""}
 <p class="lede">${esc(L(f, "logline"))}</p>
-<div class="meta">${runtime ? `<span>${esc(runtime)}</span>` : ""}${country ? `<span>${esc(country)}</span>` : ""}</div>
+<div class="meta">${country ? `<span>${esc(country)}</span>` : ""}</div>
 </div>
 ${ML(f, "poster") ? `<img class="hero-poster" src="${img(ML(f, "poster"), 700)}" alt="${esc(L(f, "title"))}">` : ""}
 </div>
