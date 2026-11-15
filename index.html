@@ -224,6 +224,10 @@ body.sorting,body.sorting *{cursor:grabbing!important;user-select:none!important
 .it .star{width:100%;height:26px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font:12px/1 var(--he)}
 .it .star.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .lang-mode{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:13px/1.4 var(--he);color:var(--muted);margin-top:8px}
+.pstrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.pstrow .pph{width:96px;aspect-ratio:2/3;background:#000;display:grid;place-items:center;overflow:hidden}
+.pstrow .pph img{width:100%;height:100%;object-fit:cover}
+.pstrow .pact{display:grid;gap:8px;justify-items:start;font:13px/1.4 var(--he)}
 .ordask{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:10px;border:1px solid var(--accent);font:500 13px/1.3 var(--he)}
 .ordask button{height:32px;padding:0 12px;border:1px solid var(--accent);background:transparent;color:var(--accent);font:600 13px/1 var(--he);cursor:pointer}
 .ordask button.solid{background:var(--accent);color:var(--accent-ink)}
@@ -1261,7 +1265,12 @@ addEventListener("pointermove", move, { passive: false }); addEventListener("poi
 const IMGL = [["gallery", "תמונות מהסרט", false], ["laurels", "פסטיבלים", true], ["partners", "תומכים ולוגואים", true]];
 function imgLists(f) {
 const m = M(f), he = edLang === "he", other = he ? "באנגלית" : "בעברית";
-return IMGL.map(([k, label, mark]) => {
+const pid = ML(f, "poster", edLang);
+const poster = `<details class="more" data-list="poster"><summary><span>פוסטר ${he ? "בעברית" : "באנגלית"}</span><span class="plus">+</span></summary>
+<div class="pstrow"><div class="pph">${pid ? `<img src="${img(pid, 240)}" alt="">` : ""}</div><div class="pact">
+${getKey() ? `<label class="upbtn">החלפת פוסטר<input type="file" accept="image/*" hidden data-poster></label><label><input type="checkbox" id="both-poster"> אותו פוסטר גם ${other}</label><span class="upmsg" id="upmsg-poster"></span>` : `<span class="upmsg">כדי להעלות: לחבר מפתח בלשונית "עמוד הבית".</span>`}
+</div></div></details>`;
+return poster + IMGL.map(([k, label, mark]) => {
 const own = !!m[k + "He"], list = ML(f, k, edLang), still = ML(f, "trailerStill", edLang) || list[1] || list[0];
 const mode = he ? (own ? `<span>לעברית יש גרסה משלה.</span><button type="button" data-same="${k}">חזרה להיות כמו באנגלית</button>` : `<span>כרגע זהה לאנגלית.</span><button type="button" data-own="${k}">גרסה נפרדת לעברית</button>`)
 : (own ? `<span>לעברית יש גרסה נפרדת.</span>` : `<span>משותף לשתי השפות.</span>`);
@@ -1296,6 +1305,10 @@ reopen(k); };
 document.querySelectorAll("[data-idel]").forEach(b => b.onclick = () => { const k = b.dataset.idel; m[lk(k)].splice(+b.dataset.i, 1); reopen(k); });
 document.querySelectorAll("[data-key-img]").forEach(b => b.onclick = () => { m.keyImage = m[lk("gallery")][+b.dataset.keyImg]; reopen("gallery"); });
 document.querySelectorAll("[data-still]").forEach(b => b.onclick = () => { m[edLang === "he" && m.galleryHe ? "trailerStillHe" : "trailerStill"] = m[lk("gallery")][+b.dataset.still]; reopen("gallery"); });
+document.querySelectorAll("[data-poster]").forEach(inp => inp.onchange = async () => { const msg = $("#upmsg-poster"); if (!inp.files.length) return;
+try { const [id] = await uploadImages([inp.files[0]], msg); const he = edLang === "he";
+m[he ? "posterHe" : "poster"] = id; if ($("#both-poster").checked) m[he ? "poster" : "posterHe"] = id;
+reopen("poster"); } catch (e) { msg.textContent = "ההעלאה נכשלה (" + e.message + ")"; } });
 document.querySelectorAll("[data-up]").forEach(inp => inp.onchange = async () => { const k = inp.dataset.up, msg = $("#upmsg-" + k); if (!inp.files.length) return;
 try { const ids = await uploadImages(inp.files, msg, k !== "gallery"); const both = $("#both-" + k);
 ids.forEach(id => { m[lk(k)] = m[lk(k)] || []; m[lk(k)].push(id); if (both && both.checked) { const o = lk(k) === k ? k + "He" : k; if (m[o]) m[o].push(id); } });
