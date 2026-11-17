@@ -439,6 +439,53 @@ header.site.open nav.main a:last-child{border-bottom:0}
 .edit-fab{padding:8px 12px;font-size:13px;bottom:10px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* accessibility menu (a11y): small tab on the side; settings saved in localStorage "uvsA11y" */
+.a-skip{position:fixed;top:-60px;inset-inline-start:12px;z-index:21;background:var(--accent);color:var(--accent-ink);font:600 14px/1 var(--body);padding:10px 14px;border:0;cursor:pointer}
+.a-skip:focus{top:calc(10px + env(safe-area-inset-top,0px))}
+.a-btn{position:fixed;inset-inline-end:0;top:64%;z-index:19;width:30px;height:40px;border:1px solid var(--line);border-inline-end:0;border-start-start-radius:9px;border-end-start-radius:9px;background:color-mix(in srgb,var(--bg) 80%,transparent);color:var(--muted);display:grid;place-items:center;padding:0;cursor:pointer;opacity:.8;backdrop-filter:blur(6px);transition:opacity .2s,color .2s,border-color .2s}
+.a-btn:hover,.a-btn[aria-expanded="true"]{opacity:1;color:var(--fg);border-color:var(--accent)}
+.a-btn svg{width:19px;height:19px}
+.a-pan{position:fixed;inset-inline-end:38px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:19;width:min(300px,calc(100vw - 52px));max-height:calc(100vh - 28px);overflow:auto;background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:14px;font:14px/1.4 var(--body);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.a-pan h2{font:600 14px/1 var(--body);margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+.a-pan h2 button{background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px}
+.a-size{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);padding:6px 6px 6px 10px;margin-bottom:8px}
+.a-size:dir(rtl){padding:6px 10px 6px 6px}
+.a-size div{display:flex;gap:6px}
+.a-size button{width:34px;height:30px;background:none;border:1px solid var(--line);color:var(--fg);font:600 16px/1 var(--body);cursor:pointer}
+.a-size button:disabled{opacity:.35;cursor:default}
+.a-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.a-grid button{background:none;border:1px solid var(--line);color:var(--fg);font:13px/1.25 var(--body);padding:10px 8px;cursor:pointer;text-align:center;min-height:44px}
+.a-grid button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.a-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+.a-foot button{background:none;border:0;color:var(--muted);font:13px/1 var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
+.a-stmt{margin-top:10px;font-size:13px;color:var(--soft);border-top:1px solid var(--line);padding-top:10px}
+.a-stmt p{margin:0 0 6px}
+.a-stmt a{color:var(--accent)}
+html.a-edit .a-btn,html.a-edit .a-pan{display:none}
+/* the settings */
+html.a-z1 #app,html.a-z1 #foot{zoom:1.15}
+html.a-z2 #app,html.a-z2 #foot{zoom:1.3}
+html.a-z3 #app,html.a-z3 #foot{zoom:1.5}
+:is(html.a-z1,html.a-z2,html.a-z3) .slide .over>*{min-width:0}
+:is(html.a-z1,html.a-z2,html.a-z3) #app{overflow-wrap:anywhere;overflow-x:clip}
+:is(html.a-z1,html.a-z2,html.a-z3) .prow{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.a-contrast{--fg:#fff;--soft:#fff;--muted:#e4e4e4;--line:#8a8a8a;--accent:#ffd27a}
+html.a-contrast .frame .cap,html.a-contrast .frame .tc{color:#fff}
+html.a-light{--bg:#fff;--panel:#f3f3f1;--fg:#111;--soft:#222;--muted:#3d3d3d;--line:#b9b9b9;--accent:#7a5200;--accent-ink:#fff;color-scheme:light}
+html.a-light .logo img{filter:invert(1)}
+html.a-light .slide .frame::before{background:linear-gradient(to top,rgba(255,255,255,.95) 0%,rgba(255,255,255,.45) 55%,transparent 100%)}
+html.a-light .film-hero::after{background:linear-gradient(to top,var(--bg) 2%,rgba(255,255,255,.6) 45%,rgba(255,255,255,.15) 100%)}
+html.a-light .poster .frame .pt{color:#fff}
+html.a-light .slide .over h1,html.a-light .hero-text h1{text-shadow:none}
+html.a-heads #app :is(h1,h2,h3,h4){text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:3px;text-underline-offset:6px}
+html.a-gray #app,html.a-gray header.site,html.a-gray #foot{filter:grayscale(1)}
+html.a-links #app a,html.a-links header.site a,html.a-links #foot a{text-decoration:underline!important;text-underline-offset:3px}
+html.a-font,html.a-font *{--body:Arial,"Segoe UI",system-ui,sans-serif;--display:Arial,"Segoe UI",system-ui,sans-serif;--he:Arial,"Segoe UI",system-ui,sans-serif}
+html.a-font #app,html.a-font #foot{letter-spacing:.02em;word-spacing:.08em}
+html.a-space #app p,html.a-space #app li,html.a-space #app dd,html.a-space #foot{line-height:1.95!important;letter-spacing:.03em}
+html.a-still *,html.a-still *::before,html.a-still *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.a-focus :focus-visible,html.a-focus :focus{outline:3px solid #ffd400!important;outline-offset:3px!important;box-shadow:0 0 0 6px #000!important}
+html.a-cursor,html.a-cursor *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24'%3E%3Cpath d='M4 2l16 10-7 1.5 4 7.5-3 1.5-4-7.5L4 20z' fill='%23000' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E") 4 2,auto!important}
 </style>
 <header class="site"><div class="wrap">
 <a class="logo" id="logo" href="/"><img src="/img/logo_white.png" alt="uvs films" width="140" height="32"></a>
@@ -446,6 +493,60 @@ header.site.open nav.main a:last-child{border-bottom:0}
 </div></header>
 <main id="app"><!--seobody--><div id="seo"><h1>uvs films</h1><p>uvs films is a documentary film production company, run by filmmaker duo Udi Nir and Sagi Bornstein.</p><nav><ul><li><a href="/">Home</a></li><li><a href="/films/">Films</a></li><li><a href="/in-production/">In Production</a></li><li><a href="/bio/">Bio &amp; Contact</a></li><li><a href="/he/">עברית</a></li></ul><ul><li><a href="/films/buryadove/">Bury a Dove (2028)</a></li><li><a href="/films/it-is-what-it-is/">It Is What It Is (2027)</a></li><li><a href="/films/tfl/">The First Lady (2025)</a></li><li><a href="/films/we-must-talk-now/">We Must Talk Now (2024)</a></li><li><a href="/films/viraldreams/">Viral Dreams (2021)</a></li><li><a href="/films/ournaturalright/">Our Natural Right (2020)</a></li><li><a href="/films/golda/">Golda (2019)</a></li><li><a href="/films/uploading-holocaust/">#uploading_holocaust (2016)</a></li><li><a href="/films/kafka-s-last-story/">Kafka's Last Story (2011)</a></li></ul></nav></div><!--/seobody--></main>
 <footer class="site" id="foot"></footer>
+<script>/* accessibility menu: one small button, settings kept per visitor (localStorage "uvsA11y") */
+(() => {
+const H = document.documentElement, KEYS = ["contrast", "light", "gray", "links", "heads", "font", "space", "still", "focus", "cursor"];
+let st = {}; try { st = JSON.parse(localStorage.getItem("uvsA11y") || "{}") || {}; } catch (e) {}
+const T = {
+en: { menu: "Accessibility", size: "Text size", contrast: "High contrast", light: "Light background", gray: "Grayscale", links: "Underline links", heads: "Mark headings", font: "Readable font", space: "Text spacing", still: "Stop motion", focus: "Keyboard focus", cursor: "Big cursor", reset: "Reset", stmt: "Accessibility statement", close: "Close", skip: "Skip to content",
+  text: ["We want everyone to be able to enjoy our films and this site. The site works with the keyboard and screen readers, and this menu lets you enlarge text, change contrast and colors, stop motion and more. Your choices are kept on this device.", "Found something that is hard to use? Write to us and we will fix it:"] },
+he: { menu: "נגישות", size: "גודל טקסט", contrast: "ניגודיות גבוהה", light: "רקע בהיר", gray: "גווני אפור", links: "הדגשת קישורים", heads: "הדגשת כותרות", font: "גופן קריא", space: "ריווח טקסט", still: "עצירת תנועה", focus: "מיקוד מקלדת", cursor: "סמן גדול", reset: "איפוס", stmt: "הצהרת נגישות", close: "סגירה", skip: "דילוג לתוכן",
+  text: ["חשוב לנו שכל אחד יוכל ליהנות מהסרטים שלנו ומהאתר. האתר מותאם לשימוש במקלדת ובקורא מסך, ובתפריט הזה אפשר להגדיל טקסט, לשנות ניגודיות וצבעים, לעצור תנועה ועוד. הבחירות נשמרות במכשיר שלכם.", "נתקלתם בקושי? כתבו לנו ונטפל בזה:"] } };
+const t = () => T[H.lang === "he" ? "he" : "en"];
+const apply = () => {
+  KEYS.forEach(k => H.classList.toggle("a-" + k, !!st[k]));
+  [1, 2, 3].forEach(n => H.classList.toggle("a-z" + n, st.zoom === n));
+  try { localStorage.setItem("uvsA11y", JSON.stringify(st)); } catch (e) {}
+};
+apply();
+const icon = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="12" cy="4" r="2"/><path d="M4.5 7.2a1 1 0 0 1 1.2-.8c2 .5 4.1.8 6.3.8s4.3-.3 6.3-.8a1 1 0 1 1 .5 1.9c-1.5.4-3.1.7-4.8.8v3.6l1.9 7.2a1 1 0 1 1-1.9.6L12.3 15h-.6l-1.7 5.5a1 1 0 1 1-1.9-.6l1.9-7.2V9.1c-1.7-.1-3.3-.4-4.8-.8a1 1 0 0 1-.7-1.1z"/></svg>';
+const btn = document.createElement("button"), pan = document.createElement("div"), skip = document.createElement("button");
+btn.className = "a-btn"; btn.type = "button"; btn.innerHTML = icon; btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", "a11yPanel");
+pan.className = "a-pan"; pan.id = "a11yPanel"; pan.hidden = true; pan.setAttribute("role", "dialog");
+skip.className = "a-skip"; skip.type = "button";
+skip.onclick = () => { const m = document.getElementById("app"); m.setAttribute("tabindex", "-1"); m.focus(); };
+const label = () => { const x = t(); btn.setAttribute("aria-label", x.menu); btn.title = x.menu; pan.setAttribute("aria-label", x.menu); skip.textContent = x.skip; };
+const fx = () => { if (typeof fitHeads === "function") setTimeout(() => fitHeads(), 50); };
+const draw = () => {
+  const x = t(), z = st.zoom || 0, more = pan.dataset.more === "1";
+  pan.innerHTML = `<h2><span>${x.menu}</span><button type="button" data-a="close" aria-label="${x.close}">×</button></h2>
+<div class="a-size"><span>${x.size}</span><div><button type="button" data-a="minus" aria-label="${x.size} −"${z ? "" : " disabled"}>−</button><button type="button" data-a="plus" aria-label="${x.size} +"${z < 3 ? "" : " disabled"}>+</button></div></div>
+<div class="a-grid">${KEYS.map(k => `<button type="button" data-k="${k}" aria-pressed="${!!st[k]}">${x[k]}</button>`).join("")}</div>
+<div class="a-foot"><button type="button" data-a="reset">${x.reset}</button><button type="button" data-a="stmt" aria-expanded="${more}">${x.stmt}</button></div>
+${more ? `<div class="a-stmt"><p>${x.text[0]}</p><p>${x.text[1]} <a href="mailto:udi@uvsfilms.com" dir="ltr">udi@uvsfilms.com</a></p></div>` : ""}`;
+};
+const open = on => { pan.hidden = !on; btn.setAttribute("aria-expanded", on); if (on) { label(); draw(); pan.querySelector("[data-k]").focus(); } };
+btn.onclick = () => open(pan.hidden);
+pan.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return; const a = b.dataset.a, k = b.dataset.k;
+  if (k) { st[k] = !st[k]; if (k === "light" && st.light) st.contrast = false; if (k === "contrast" && st.contrast) st.light = false; }
+  if (a === "plus") st.zoom = Math.min(3, (st.zoom || 0) + 1);
+  if (a === "minus") st.zoom = Math.max(0, (st.zoom || 0) - 1);
+  if (a === "reset") st = {};
+  if (a === "stmt") pan.dataset.more = pan.dataset.more === "1" ? "" : "1";
+  if (a === "close") { open(false); btn.focus(); return; }
+  apply(); draw(); fx();
+  if (k === "still" || a === "reset" || a === "plus" || a === "minus") { if (typeof render === "function") { const y = scrollY; render(); scrollTo(0, y); } }
+  const again = pan.querySelector(k ? `[data-k="${k}"]` : `[data-a="${a}"]`); if (again && !again.disabled) again.focus(); else pan.querySelector("[data-k]").focus();
+});
+addEventListener("keydown", e => { if (e.key === "Escape" && !pan.hidden) { open(false); btn.focus(); } });
+document.addEventListener("click", e => { const path = e.composedPath(); if (!pan.hidden && !path.includes(pan) && !path.includes(btn)) open(false); });
+const route = () => { H.classList.toggle("a-edit", /^#(he-)?edit/.test(location.hash)); label(); if (!pan.hidden) draw(); };
+addEventListener("hashchange", route); addEventListener("popstate", () => setTimeout(route));
+new MutationObserver(route).observe(H, { attributes: true, attributeFilter: ["lang"] });
+document.body.prepend(skip); document.body.append(btn, pan); route();
+})();
+</script>
 <a class="edit-fab" id="fab" href="#edit">עריכת עמוד</a>
 <script>// UVS site content — copied from uvsfilms.com (Wix), 10.11.2026
 // Every page is built from these fields by the templates in index.html.
@@ -964,9 +1065,9 @@ more.setAttribute("aria-expanded", open); more.setAttribute("aria-label", docume
 if (folds && narrow) { more.style.left = more.style.top = ""; }
 if (folds && !narrow) requestAnimationFrame(() => {
 const r1 = rows[0], r2 = rows[1], bx = box.getBoundingClientRect(), rtl = getComputedStyle(box).direction === "rtl";
-const half = +box.dataset.cell / 2, edge = r => { const kids = [...r.children].filter(k => k.offsetWidth && k.classList.contains("mk")), q = (kids[kids.length - 1] || r).getBoundingClientRect(); return (q.left + q.right) / 2 + (rtl ? -half : half); };
+const zf = bx.width / box.offsetWidth || 1, half = +box.dataset.cell / 2 * zf, edge = r => { const kids = [...r.children].filter(k => k.offsetWidth && k.classList.contains("mk")), q = (kids[kids.length - 1] || r).getBoundingClientRect(); return (q.left + q.right) / 2 + (rtl ? -half : half); };
 const e1 = edge(r1), e2 = edge(r2);
-const x = rtl ? Math.min(e1, e2) - bx.left - 12 - more.offsetWidth : Math.max(e1, e2) - bx.left + 12;
+const x = (rtl ? Math.min(e1, e2) - bx.left - (12 + more.offsetWidth) * zf : Math.max(e1, e2) - bx.left + 12 * zf) / zf;
 more.style.insetInlineEnd = "auto"; more.style.left = x + "px";
 more.style.top = (r1.offsetTop + r1.offsetHeight + r2.offsetTop) / 2 + "px"; });
 const fab = document.getElementById("fab"); if (fab && root === document) fab.classList.toggle("ask", cut > 0);
@@ -983,7 +1084,7 @@ let gtimer = 0;
 Mouse: hover steers (desktop), drag moves. Touch: plain swipe; the glide pauses while the finger or the momentum moves it. */
 function startGallery(root = document) {
 cancelAnimationFrame(gtimer);
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, base = reduce ? 0 : .35;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("a-still"), base = reduce ? 0 : .35;
 const all = [...root.querySelectorAll(".strip")].map(st => {
 const o = { st, dir: st.dataset.start === "end" ? -1 : 1, v: 0, target: 0, pos: 0, hold: 0, userAt: 0, steer: 0, started: 0 };
 o.target = base * o.dir;
@@ -1239,7 +1340,7 @@ cur = (n + slides.length) % slides.length;
 slides.forEach((s, i) => s.classList.toggle("on", i === cur));
 thumbs.forEach((b, i) => { b.classList.remove("on"); if (i === cur) { void b.offsetWidth; b.classList.add("on"); } });
 };
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("a-still");
 const tick = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => go(cur + 1), 6000); };
 $("#prev").onclick = () => { go(cur - 1); tick(); };
 $("#next").onclick = () => { go(cur + 1); tick(); };
